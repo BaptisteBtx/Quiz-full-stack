@@ -1,8 +1,7 @@
-from sqlite3 import Connection
 import json
 from models import Question, Participation
 from utils import get_db
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, InternalServerError
 
 
 class CRUD():
@@ -15,17 +14,26 @@ class CRUD():
             db = get_db()
             cur = db.cursor()
             try:
+                cur.execute('''BEGIN''');
+                cur.execute(
+                    '''
+                    UPDATE questions SET
+                        position = position + 1
+                    WHERE position >= ?
+                    ''', (q.position,)
+                )
                 cur.execute(
                     '''
                     INSERT INTO questions (title, position, text, image, answers) 
-                        SELECT
-                            ?, ?, ?, ?, ?
-                        WHERE (SELECT count(*)+1 from questions) >= ?
+                    VALUES (?, ?, ?, ?, ?)
                     ''',
-                    (q.title, q.position, q.text, q.image, q.possibleAnswers.json(), q.position)
+                    (q.title, q.position, q.text, q.image, q.possibleAnswers.json())
                 )
                 db.commit()
                 return cur.lastrowid
+            except Exception as e:
+                cur.execute("rollback")
+                raise InternalServerError()
             finally:
                 cur.close()
         
@@ -92,18 +100,31 @@ class CRUD():
         def delete(id: int) -> None:
             db = get_db()
             cur = db.cursor()
+            rows_affected = 0
             try:
+                cur.execute('''BEGIN''');
+                cur.execute(
+                '''
+                    UPDATE questions SET
+                        position = position - 1
+                    WHERE position >= (SELECT position FROM questions WHERE id=?)
+                ''', (id,)
+                );
                 cur.execute(
                     '''
                     DELETE FROM questions WHERE id=?
-                    '''
-                    ,
-                    (id,)
+                    ''', (id,)
                 )
-                if cur.rowcount != 1:
-                    raise NotFound()
+                db.commit()
+                rows_affected = cur.rowcount
+            except Exception:
+                cur.execute("rollback")
+                raise InternalServerError()
             finally:
                 cur.close()
+            
+            if rows_affected != 1:
+                raise NotFound()
 
         @staticmethod
         def delete_all() -> None:
