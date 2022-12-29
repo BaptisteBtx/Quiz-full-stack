@@ -3,7 +3,8 @@
   <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.date">
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
-  <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link>
+  <!-- TODO : En faire un composant  -->
+  <!-- <router-link to="/start-new-quiz-page">Démarrer le quiz !</router-link> -->
 </template>
 
 <script>
