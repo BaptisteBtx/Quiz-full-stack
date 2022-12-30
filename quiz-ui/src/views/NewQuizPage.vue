@@ -11,8 +11,8 @@ const router = useRouter()
 const username = ref(participationStorageService.getPlayerName())
 
 
-// Add quiz 
-async function launchNewQuiz() {
+// Launch quiz 
+function launchNewQuiz() {
   participationStorageService.savePlayerName(username.value)
   console.log("Lauch quiz with username : ", username.value)
   // Push route : 

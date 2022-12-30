@@ -1,7 +1,7 @@
 from flask import Flask,request, Blueprint
 from flask_cors import CORS
-from jwt_utils import build_token
-from crud import CRUD
+from ..jwt_utils import build_token
+from ..crud import CRUD
 
 app = Flask(__name__)
 CORS(app)

@@ -1,8 +1,8 @@
 from flask import Blueprint, request
 # from crud import CRUD
-from crud import CRUD
-from models import Question
-from utils import login_required
+from ..crud import CRUD
+from ..models import Question
+from ..utils import login_required
 
 questions_bp = Blueprint('questions_bp', __name__)
 

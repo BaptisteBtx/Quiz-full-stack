@@ -7,11 +7,11 @@ def create_app():
     CORS(app)
 
     # Register db handle
-    from utils import init_app
+    from .utils import init_app
     init_app(app)
 
     # Register blueprints
-    from blueprints import root, questions
+    from .blueprints import root, questions
     app.register_blueprint(root.root_bp)
     app.register_blueprint(questions.questions_bp, url_prefix="/questions")
     return app
