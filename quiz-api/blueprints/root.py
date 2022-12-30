@@ -19,7 +19,10 @@ def get_quiz_info():
     """
     Cette fonction permet de récupérer des informations d'ordre général sur le quiz
     """
-    return {"size": 0, "scores": []}, 200 # Scores : tableau d'objet participationResult trié par scores décroissants (player name, score, date)
+    size = CRUD.DBinfo.count_qst()
+    scores = CRUD.DBinfo.get_scores()
+
+    return {"size": size, "scores": scores}, 200 # Scores : tableau d'objet participationResult trié par scores décroissants (player name, score, date)
 
 
 @root_bp.route('/login', methods=['POST'])

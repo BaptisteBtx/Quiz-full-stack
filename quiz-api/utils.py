@@ -39,6 +39,16 @@ def create_tables():
     cur = db.cursor()
     cur.execute(
         '''
+		CREATE TABLE IF NOT EXISTS participations (
+			id INTEGER PRIMARY KEY,
+			playerName TEXT,
+			date TEXT,
+			score INTEGER
+		);
+		'''
+    )
+    cur.execute(
+        '''
 		CREATE TABLE IF NOT EXISTS questions (
 			id INTEGER PRIMARY KEY,
 			title TEXT,

@@ -1,3 +1,4 @@
+from typing import Union
 from pydantic import BaseModel
 
 class Answer(BaseModel):
@@ -8,7 +9,7 @@ class Answers(BaseModel):
     __root__: list[Answer]
 
 class Question(BaseModel):
-    id: int | None = None
+    id: Union[int, None]
     title: str
     position: int
     text: str
@@ -16,6 +17,14 @@ class Question(BaseModel):
     possibleAnswers: Answers
 
 class Participation(BaseModel):
-    id: int | None = None
     playerName: str
     answers: Answers
+
+class ParticipationEval(BaseModel):
+    id: Union[int,None]
+    playerName: str
+    date: str
+    score: int
+
+
+

@@ -1,5 +1,7 @@
 <template>
-  <h1>Home page</h1>
+  <h1>Informations sur le quiz : </h1>
+  <h3>Nombre de questions : {{ questionsCount }}</h3>
+  <h3>Scores :</h3>
   <div v-for="scoreEntry in registeredScores" v-bind:key="scoreEntry.date">
     {{ scoreEntry.playerName }} - {{ scoreEntry.score }}
   </div>
@@ -11,20 +13,26 @@
 import quizApiService from "@/services/QuizApiService";
 
 // let registeredScores = [{ playerName: 'Bob', score: 0 }, { playerName: 'Bobby', score: 1 }]
-let registeredScores = []
+// let registeredScores = []
+// let questionsCount = 0
 
 export default {
   name: "HomePage",
   data() {
     return {
       // registeredScores: registeredScores
-      registeredScores: registeredScores
+      registeredScores: [],
+      questionsCount: 0
     };
   },
   async created() {
     console.log("Composant Home page 'created'");
-    registeredScores = await quizApiService.getQuizInfo()
-    console.log(registeredScores)
+    let quizInfo = await quizApiService.getQuizInfo()
+    console.log(quizInfo)
+    this.registeredScores = quizInfo.data.scores
+    this.questionsCount = quizInfo.data.size
+    console.log(this.registeredScores)
+    console.log(this.questionsCount)
   }
 
 };
