@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
 import participationStorageService from "@/services/ParticipationStorageService";
-
+import QuestionsManagerVue from '../components/QuestionsManager.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter()
 
@@ -11,10 +11,7 @@ const router = useRouter()
 const username = ref(participationStorageService.getPlayerName())
 
 //Validation des réponses
-async function validateAnswer() {
-  //TO DO
-  console.log('Réponse validée pour ' + username.value)
-}
+
 
 
 // Export default : remplacé par script setup
@@ -23,7 +20,7 @@ async function validateAnswer() {
 <template>
   <div class="questions_page">
     <h1>Quiz</h1>
-    <button type="button" class="btn btn-success" @click="validateAnswer">Valider</button>
+    <QuestionsManagerVue></QuestionsManagerVue>
   </div>
 </template>
   
