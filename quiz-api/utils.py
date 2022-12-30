@@ -1,6 +1,6 @@
 import functools
 from flask import abort, request, g
-from jwt_utils import decode_token, JwtError
+from .jwt_utils import decode_token, JwtError
 import sqlite3
  
 def login_required(view):

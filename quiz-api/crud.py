@@ -1,6 +1,6 @@
 import json
-from models import Question, Participation
-from utils import get_db
+from .models import Question, Participation
+from .utils import get_db
 from werkzeug.exceptions import NotFound, InternalServerError
 
 
