@@ -31,7 +31,7 @@ async function launchNewQuiz() {
       <input type="text" class="form-control" placeholder="Username" aria-label="Username"
         aria-describedby="form-username" v-model="username">
     </div>
-    <button type="button" class="btn btn-success" @click="launchNewQuiz">Test</button>
+    <button type="button" class="btn btn-success" @click="launchNewQuiz">GO</button>
   </div>
 </template>
   
