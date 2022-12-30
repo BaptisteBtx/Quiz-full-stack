@@ -1,7 +1,7 @@
 <script setup>
 
 // const quiz = ref(null)
-const question = props
+
 
 // Export default : remplacé par script setup
 
