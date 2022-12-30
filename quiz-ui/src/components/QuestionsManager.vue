@@ -33,6 +33,9 @@ async function endQuiz() {
   router.push('/');
 }
 
+//props
+
+
 // Export default : remplacé par script setup
 
 </script>
@@ -40,7 +43,7 @@ async function endQuiz() {
 <template>
   <div class="question_manager">
     <h3>Question {{ currentQuestionPosition }}</h3>
-    <QuestionDisplay question={{ currentQuestion }}></QuestionDisplay>
+    <QuestionDisplay :question="{ currentQuestion }"></QuestionDisplay>
     <button type="button" class="btn btn-success" @click="answerClickHandler">Valider</button>
   </div>
 </template>

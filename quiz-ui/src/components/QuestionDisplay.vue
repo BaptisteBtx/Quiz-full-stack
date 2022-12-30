@@ -1,8 +1,14 @@
 <script setup>
 
 // const quiz = ref(null)
-const question = props
 
+//props
+const props = defineProps({
+  question: Object
+})
+
+
+console.log(props.question)
 // Export default : remplacé par script setup
 
 </script>
