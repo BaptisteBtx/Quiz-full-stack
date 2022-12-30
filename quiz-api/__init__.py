@@ -11,7 +11,9 @@ def create_app():
     init_app(app)
 
     # Register blueprints
-    from .blueprints import root, questions
+    from .blueprints import root, questions, participations
     app.register_blueprint(root.root_bp)
     app.register_blueprint(questions.questions_bp, url_prefix="/questions")
+    app.register_blueprint(participations.participations_bp, url_prefix="/participations")
+
     return app
