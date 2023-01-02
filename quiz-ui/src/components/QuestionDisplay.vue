@@ -10,7 +10,6 @@ const props = defineProps({
 const emits = defineEmits(["answer-selected"])
 
 let currentQuestion = props.question.currentQuestion
-console.log(currentQuestion)
 // Export default : remplacé par script setup
 
 
