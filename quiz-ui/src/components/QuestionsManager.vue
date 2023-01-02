@@ -2,6 +2,7 @@
 import { ref, watchEffect } from 'vue'
 import participationStorageService from "@/services/ParticipationStorageService";
 import QuestionDisplay from './QuestionDisplay.vue'
+import quizApiService from "@/services/QuizApiService";
 import { useRouter } from 'vue-router';
 const router = useRouter()
 
@@ -10,28 +11,48 @@ const router = useRouter()
 // Variables formulaire
 const username = ref(participationStorageService.getPlayerName())
 
+let currentQuestionPosition = 1
+let question = await quizApiService.getQuestion(currentQuestionPosition)
+let quizInfo = await quizApiService.getQuizInfo()
+
 let currentQuestion = {
-  questionTitle: 'Titre de la question',
-  questionDescription: 'Description de la question',
-  possibleAnswers: ['Réponse A', 'Réponse B', 'Réponse C']
+  questionId: question.data.id,
+  questionTitle: question.data.title,
+  questionDescription: question.data.text,
+  possibleAnswers: question.data.possibleAnswers,
+  image: question.data.image
 }
 
-let currentQuestionPosition = 1
+
 let selectedAnswer = 0
+const totalQuestionNumber = quizInfo.data.size
 
 // Chargé la question en fonction de la position
 async function loadQuestionByPosition() {
 
-  //TO DO : Implémenter le nombre total de question
-  //if(currentQuestionPosition===totalQuestionNumber){endQuiz()}
 
-  //TO DO : Sauvegarder la réponse selectedAnswer
-  currentQuestionPosition += 1
-  console.log('Chargement question ' + currentQuestionPosition)
-  //TO DO : Changer de question
+
+  if (currentQuestionPosition > totalQuestionNumber) { endQuiz() }
+  else {
+    //TO DO : Sauvegarder la réponse selectedAnswer
+    currentQuestionPosition += 1
+
+    console.log('Chargement question ' + currentQuestionPosition)
+
+    let question = await quizApiService.getQuestion(currentQuestionPosition)
+    console.log(question)
+
+    /* currentQuestion = {
+      questionId: question.data.id,
+      questionTitle: question.data.title,
+      questionDescription: question.data.text,
+      possibleAnswers: question.data.possibleAnswers,
+      image: question.data.image
+    } */
+  }
 }
 
-async function answerClickHandler(answerNumber) {
+function answerClickHandler(answerNumber) {
   selectedAnswer = answerNumber
   console.log('Réponse actuelle ', selectedAnswer)
   //TO DO
@@ -41,8 +62,6 @@ async function endQuiz() {
   router.push('/');
 }
 
-//props
-
 
 // Export default : remplacé par script setup
 
@@ -50,9 +69,9 @@ async function endQuiz() {
 
 <template>
   <div class="question_manager">
-    <h3>Question {{ currentQuestionPosition }}</h3>
+    <h1>Question : {{ currentQuestion.questionId }} / {{ totalQuestionNumber }}</h1>
     <QuestionDisplay :question="{ currentQuestion }" @answer-selected="answerClickHandler"></QuestionDisplay>
-    <button type="button" class="btn btn-success" @click="loadQuestionByPosition">Valider</button>
+    <button type="button" class="btn btn-success" @click="loadQuestionByPosition">Suivant</button>
   </div>
 </template>
   

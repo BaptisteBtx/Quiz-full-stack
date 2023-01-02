@@ -19,8 +19,9 @@ const username = ref(participationStorageService.getPlayerName())
 
 <template>
   <div class="questions_page">
-    <h1>Quiz</h1>
-    <QuestionsManagerVue></QuestionsManagerVue>
+    <Suspense>
+      <QuestionsManagerVue></QuestionsManagerVue>
+    </Suspense>
   </div>
 </template>
   
