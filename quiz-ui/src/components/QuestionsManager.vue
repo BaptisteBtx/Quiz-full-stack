@@ -4,6 +4,8 @@ import participationStorageService from "@/services/ParticipationStorageService"
 import QuestionDisplay from './QuestionDisplay.vue'
 import quizApiService from "@/services/QuizApiService";
 import { useRouter } from 'vue-router';
+import QuizApiService from '../services/QuizApiService';
+import ParticipationStorageService from '../services/ParticipationStorageService';
 const router = useRouter()
 
 // const quiz = ref(null)
@@ -24,8 +26,9 @@ let currentQuestion = {
 }
 
 
-let selectedAnswer = 0
+
 const totalQuestionNumber = quizInfo.data.size
+let selectedAnswer = Array(totalQuestionNumber)
 
 // Chargé la question en fonction de la position
 async function loadQuestionByPosition() {
@@ -38,11 +41,21 @@ async function loadQuestionByPosition() {
 
     let question = await quizApiService.getQuestion(currentQuestionPosition.value + 1)
 
-    if (question === undefined) {
-      console.log("Question undefined", currentQuestionPosition.value + 1)
-      currentQuestionPosition.value += 1
+    //TO DO : Indiquer à l'utilisateur qu'il doit entrer une réponse
+    if (selectedAnswer[currentQuestionPosition.value - 1] === undefined) {
+      //selectedAnswer[currentQuestionPosition.value - 1] = -1
+      console.log("Veuillez entrer une réponse !")
       return
     }
+    //TO DO : Gérer le cas de la question non disponible
+    if (question === undefined) {
+      selectedAnswer[currentQuestionPosition.value] = -1
+      currentQuestionPosition.value += 1
+      await loadQuestionByPosition()
+      return
+    }
+    console.log(currentQuestionPosition.value)
+
 
     currentQuestion = {
       questionId: question.data.id + 1,
@@ -58,12 +71,17 @@ async function loadQuestionByPosition() {
 }
 
 function answerClickHandler(answerNumber) {
-  selectedAnswer = answerNumber
+
+  selectedAnswer[currentQuestionPosition.value - 1] = answerNumber
   console.log('Réponse actuelle ', selectedAnswer)
   //TO DO
 }
 
 async function endQuiz() {
+
+  //let score = await QuizApiService.getParticipationScore("Bob", [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+  //ParticipationStorageService.saveParticipationScore(35)
+
   router.push('/');
 }
 
