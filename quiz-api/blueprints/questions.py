@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-# from crud import CRUD
 from ..crud import CRUD
 from ..models import Question
 from ..utils import login_required
@@ -24,8 +23,6 @@ def get_by_position():
     """
     p = request.args.get('position')
     db_question = CRUD.Question.get_by_position(p)
-    # if not db_question:
-    #     raise f"Question {position} not found in db"
     return db_question.dict(), 200
        
 

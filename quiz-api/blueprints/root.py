@@ -2,6 +2,7 @@ from flask import Flask,request, Blueprint
 from flask_cors import CORS
 from ..jwt_utils import build_token
 from ..crud import CRUD
+from ..models import QuizInfo
 
 app = Flask(__name__)
 CORS(app)
@@ -21,8 +22,9 @@ def get_quiz_info():
     """
     size = CRUD.DBinfo.count_qst()
     scores = CRUD.DBinfo.get_scores()
+    infos = QuizInfo(size=size, scores=scores)
 
-    return {"size": size, "scores": scores}, 200 # Scores : tableau d'objet participationResult trié par scores décroissants (player name, score, date)
+    return infos.dict(), 200 # Scores : tableau d'objet participationResult trié par scores décroissants (player name, score, date)
 
 
 @root_bp.route('/login', methods=['POST'])

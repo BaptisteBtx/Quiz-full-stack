@@ -1,5 +1,5 @@
 import json
-from .models import Question, Participation
+from .models import Question, Participation, DbParticipation
 from .utils import get_db
 from werkzeug.exceptions import NotFound, InternalServerError
 
@@ -31,12 +31,11 @@ class CRUD():
             try: 
                 cur.execute(
                     '''
-                    SELECT * FROM participations ORDER BY score
+                    SELECT * FROM participations ORDER BY score DESC
                     '''
                 )
-                scores = [Participation(**dict(s)) for s in cur.fetchall()]
+                scores = [DbParticipation(**dict(s)) for s in cur.fetchall()]
                 return scores
-                
             finally:
                 cur.close()
         
@@ -120,36 +119,7 @@ class CRUD():
 
             if rows_affected != 1:
                 raise NotFound()
-           
-            
 
-            # db = get_db()
-            # cur = db.cursor()
-
-            # try:
-            #     # Manage positions
-            #     questions = CRUD.Question.get_all()
-            #     for db_q in questions:
-            #         if db_q.id == q.id:
-            #             old_position = db_q.position
-                    
-            #     questions.insert(q.position-1, questions.pop(old_position-1)) # Switch positions
-            #     for i in range(questions):
-            #         questions[i].position = i+1
-
-            #     cur.executemany(
-            #         '''
-            #         UPDATE questions SET position=?
-            #         WHERE id=?
-            #         ''',
-            #         # (q.title, q.position, q.text, q.image, q.possibleAnswers.json(), q.id)
-            #         (questions)
-            #     )
-            #     db.commit()
-            #     if cur.rowcount != 1:
-            #         raise NotFound()
-            # finally:
-            #     cur.close()
     
         @staticmethod
         def get_by_id(id: int) -> Question:
@@ -187,7 +157,6 @@ class CRUD():
                     d = dict(q)
                     d['possibleAnswers'] = json.loads(d['answers']) # Convert back from json
                     questions.append(Question(**d))
-
                 return questions
             except TypeError:
                 raise NotFound()
@@ -254,47 +223,46 @@ class CRUD():
                     DELETE FROM questions
                     '''
                 )
+                db.commit()
+            finally:
+                cur.close()
+        
+        @staticmethod
+        def get_correct_answers_positions():
+            db = get_db()
+            cur = db.cursor()
+            try:
+                cur.execute(
+                    '''
+                    SELECT 
+                        CAST(substr(fullkey , 3, LENGTH(fullkey) - 3) as INT) + 1 as correctPosition
+                    FROM questions, json_each(questions.answers)
+                        WHERE json_extract(value, '$.isCorrect') = 1
+                    ORDER BY questions.position ASC
+                    '''
+                )
+                rows = cur.fetchall()
+                return [row['correctPosition'] for row in rows]
             finally:
                 cur.close()
 
     class Participation():
         @staticmethod
-        def insert(p: Participation) -> int:
+        def insert(p: DbParticipation) -> int:
             db = get_db()
             cur = db.cursor()
             try:
                 cur.execute(
                     '''
-                    INSERT INTO participations(playerName, answers, date, score) VALUES(?, ?, ?, ?)
+                    INSERT INTO participations(playerName, date, score) VALUES (?, ?, ?)
                     ''', 
-                    (p.playerName, p.answers.json(), p.date, p.score)
+                    (p.playerName, p.date, p.score)
                 )
                 db.commit()
-                # p.id = cur.lastrowid
                 return cur.lastrowid
             finally:
                 cur.close()
     
-        @staticmethod
-        def get(id: int) -> Participation:
-            db = get_db()
-            cur = db.cursor()
-            try:
-                cur.execute(
-                    '''
-                    SELECT * FROM participations WHERE id=?
-                    ''',
-                    (id,)
-                )
-                row = cur.fetchone()
-                d = dict(row)
-                d['answers'] = json.loads(d['answers']) # Convert back from json
-                return Participation(**d)
-            except TypeError:
-                raise NotFound()
-            finally:
-                cur.close()
-
         @staticmethod
         def delete_all() -> None:
             db = get_db()
@@ -305,6 +273,7 @@ class CRUD():
                     DELETE FROM participations
                     '''
                 )
+                db.commit()
             finally:
                 cur.close()
 

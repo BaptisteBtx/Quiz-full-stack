@@ -1,7 +1,7 @@
 from flask import Blueprint, request
-# from crud import CRUD
+from pydantic import ValidationError
 from ..crud import CRUD
-from ..models import Participation
+from ..models import Participation, DbParticipation
 from ..utils import login_required
 
 participations_bp = Blueprint('participations_bp', __name__)
@@ -24,27 +24,26 @@ def create():
     Cette fonction permet d'envoyer la liste des réponses sélectionnées par un participant pour l'ensemble du quiz
     Payload : player_name, answers
     """
+
     payload = request.get_json()
     p = Participation(**payload) 
+    correctAnswers = CRUD.Question.get_correct_answers_positions()
+
+    if len(p.answers) != len(correctAnswers):
+        raise ValidationError(None, None)
     
-    questions = CRUD.Question.get_all()
     answers_summaries = []
     score = 0
-    for q, a in map(questions, p.answers):
-        answer_summary = {}
-        for i,q_a in enumerate(q.possibleAnswers):
-            if q_a.isCorrect:
-                answer_summary["correctAnswerPosition"] = i
-                break
-        # good_answer = q.possibleAnswers[a].isCorrect
-        answer_summary["wasCorrect "] = answer_summary["correctAnswerPosition"]==a
-        if answer_summary["wasCorrect "] : 
+    for q, a in zip(correctAnswers, p.answers):
+        answers_summaries.append({
+            "correctAnswerPosition": q,
+            "wasCorrect": q == a
+        })
+        if q == a:
             score += 1
-
-        answers_summaries.append(answer_summary)
-        
-    id_participation = CRUD.Participation.insert(p)
-    # return db_participation.dict()
+    
+    db_participation = DbParticipation(playerName=p.playerName, score=score)
+    id_participation = CRUD.Participation.insert(db_participation)
     return {
         "answersSummaries":answers_summaries,
         "playerName":p.playerName,
