@@ -3,6 +3,10 @@ import HomePage from '../views/HomePage.vue'
 import NewQuizPage from '../views/NewQuizPage.vue'
 import QuestionsPage from '../views/QuestionsPage.vue'
 import EndPage from '../views/EndPage.vue'
+import ListQuestionsAdmin from '../views/ListQuestionsAdmin.vue'
+import LoginPage from '../views/LoginPage.vue'
+import QuestionAdmin from '../views/QuestionAdmin.vue'
+import UpdateQuestionAdmin from '../views/UpdateQuestionAdmin.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +30,26 @@ const router = createRouter({
       path: '/questions',
       name: 'Questions',
       component: QuestionsPage // TODO : Questions Page (questions)
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: LoginPage // TODO : Login Page 
+    },
+    {
+      path: '/list_questions_admin',
+      name: 'Liste Questions',
+      component: ListQuestionsAdmin // TODO : List Question Admin Page 
+    },
+    {
+      path: '/question_admin',
+      name: 'Question',
+      component: QuestionAdmin // TODO : Question Admin Page 
+    },
+    {
+      path: '/update_question_admin',
+      name: 'Update Question',
+      component: UpdateQuestionAdmin // TODO : Update Question Admin Page 
     },
     {
       path: '/about',
