@@ -21,7 +21,7 @@ def login_required(view):
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect('./testV2.db')
+        g.db = sqlite3.connect('./quiz.db')
         g.db.row_factory = sqlite3.Row # Queries return will behave like a dict
         g.db.isolation_level = None
     return g.db
