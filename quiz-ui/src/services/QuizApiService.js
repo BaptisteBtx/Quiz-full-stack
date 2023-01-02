@@ -33,5 +33,9 @@ export default {
   },
   getQuestion(position) {
     return this.call("get", "questions?position=" + position);
+  },
+  login(password) {
+    //To Do : get Token for user
+    return 1
   }
 };
