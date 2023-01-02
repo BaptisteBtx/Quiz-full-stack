@@ -11,8 +11,8 @@ const router = useRouter()
 // Variables formulaire
 const username = ref(participationStorageService.getPlayerName())
 
-let currentQuestionPosition = 1
-let question = await quizApiService.getQuestion(currentQuestionPosition)
+let currentQuestionPosition = ref(1)
+let question = await quizApiService.getQuestion(currentQuestionPosition.value)
 let quizInfo = await quizApiService.getQuizInfo()
 
 let currentQuestion = {
@@ -32,23 +32,28 @@ async function loadQuestionByPosition() {
 
 
 
-  if (currentQuestionPosition > totalQuestionNumber) { endQuiz() }
+  if (currentQuestionPosition.value + 1 > totalQuestionNumber) { endQuiz() }
   else {
     //TO DO : Sauvegarder la réponse selectedAnswer
-    currentQuestionPosition += 1
 
-    console.log('Chargement question ' + currentQuestionPosition)
+    let question = await quizApiService.getQuestion(currentQuestionPosition.value + 1)
 
-    let question = await quizApiService.getQuestion(currentQuestionPosition)
-    console.log(question)
+    if (question === undefined) {
+      console.log("Question undefined", currentQuestionPosition.value + 1)
+      currentQuestionPosition.value += 1
+      return
+    }
 
-    /* currentQuestion = {
-      questionId: question.data.id,
+    currentQuestion = {
+      questionId: question.data.id + 1,
       questionTitle: question.data.title,
       questionDescription: question.data.text,
       possibleAnswers: question.data.possibleAnswers,
       image: question.data.image
-    } */
+    }
+
+    currentQuestionPosition.value += 1
+
   }
 }
 
@@ -70,7 +75,8 @@ async function endQuiz() {
 <template>
   <div class="question_manager">
     <h1>Question : {{ currentQuestion.questionId }} / {{ totalQuestionNumber }}</h1>
-    <QuestionDisplay :question="{ currentQuestion }" @answer-selected="answerClickHandler"></QuestionDisplay>
+    <QuestionDisplay :key="currentQuestionPosition" :question="{ currentQuestion }"
+      @answer-selected="answerClickHandler"></QuestionDisplay>
     <button type="button" class="btn btn-success" @click="loadQuestionByPosition">Suivant</button>
   </div>
 </template>
