@@ -13,13 +13,23 @@ let currentQuestion = props.question.currentQuestion
 console.log(currentQuestion)
 // Export default : remplacé par script setup
 
+
 </script>
 
 <template>
   <div class="question">
-    <p>{{ currentQuestion.questionTitle }}</p>
-    <a @click="$emit('answer-selected', 2)">{{ currentQuestion.questionDescription }}</a>
-    <!-- <img v-if="question.image" :src="question.image" /> -->
+    <h5> {{ currentQuestion.questionTitle }}</h5>
+    <img v-if="currentQuestion.image" :src="currentQuestion.image" />
+
+
+    <p> {{ currentQuestion.questionDescription }}</p>
+
+    <div @click="$emit('answer-selected', index)" v-for="(answer, index) in currentQuestion.possibleAnswers"
+      v-bind:key="answer.text">
+      <a>
+        {{ index }} - {{ answer.text }}
+      </a>
+    </div>
   </div>
 </template>
   
