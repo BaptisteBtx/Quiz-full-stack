@@ -1,5 +1,6 @@
 import functools
 from flask import abort, request, g
+from pydantic import ValidationError
 from .jwt_utils import decode_token, JwtError
 import sqlite3
  
@@ -18,6 +19,8 @@ def login_required(view):
 
     return wrapped_view
 
+def handle_validation_error(e: ValidationError):
+    return '', 400
 
 def get_db():
     if "db" not in g:
@@ -53,29 +56,19 @@ def create_tables():
 			id INTEGER PRIMARY KEY,
 			title TEXT,
 			text TEXT,
-			position TEXT,
+			position INT,
 			image TEXT, 
 			answers TEXT
 		);
 		'''
     )
-    cur.execute(
-        '''
-        CREATE TRIGGER IF NOT EXISTS pos_after_delete
-        AFTER DELETE ON questions
-        BEGIN
-            UPDATE questions SET
-                position = position - 1
-            WHERE
-                position >= OLD.position;
-        END;
-        '''
-    )
+    db.commit()
     cur.close()
 
 
 def init_app(app):
     app.teardown_appcontext(close_db)
+    app.register_error_handler(ValidationError, handle_validation_error)
     with app.app_context():
         create_tables()
     
