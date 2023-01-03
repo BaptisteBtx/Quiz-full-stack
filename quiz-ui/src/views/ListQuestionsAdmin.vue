@@ -3,6 +3,8 @@ import { ref, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router';
 import participationStorageService from '../services/ParticipationStorageService';
+import quizApiService from '../services/QuizApiService';
+import QuestionsList from '../components/QuestionsList.vue';
 
 
 const router = useRouter()
@@ -11,10 +13,16 @@ const router = useRouter()
 
 // Variables formulaire
 const username = ref(participationStorageService.getPlayerName())
+//let info = await quizApiService.getQuizInfo()
+//console.log(info)
 
 // Launch quiz 
 async function returnHome() {
   router.push('/')
+}
+
+async function updateQuestion(number) {
+  router.push('/question_admin?p=' + number)
 }
 
 // Export default : remplacé par script setup
@@ -23,8 +31,11 @@ async function returnHome() {
 
 <template>
   <div>
-    <h1>Liste de questions :
-    </h1>
+    <h1>Liste de questions :</h1>
+    <Suspense>
+      <QuestionsList :update-question="updateQuestion"></QuestionsList>
+    </Suspense>
+
     <button type="button" class="btn btn-success" @click="returnHome">Home</button>
   </div>
 </template>
