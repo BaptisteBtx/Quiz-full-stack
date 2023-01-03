@@ -6,23 +6,25 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="align-self-stretch w-90 d-flex flex-column justify-content ">
+    <header class="fixed-top w-100 justify-content-center">
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
+      <div>
 
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/start_new_quiz">Démarrer le quiz !</RouterLink>
-        <RouterLink to="/about">A propos</RouterLink>
-        <RouterLink to="/login">Connexion/Déconnexion</RouterLink>
+        <nav>
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink to="/start_new_quiz">Démarrer le quiz !</RouterLink>
+          <RouterLink to="/about">A propos</RouterLink>
+          <RouterLink to="/admin">Connexion/Déconnexion</RouterLink>
 
-      </nav>
-    </div>
-  </header>
+        </nav>
+      </div>
+    </header>
 
-  <RouterView />
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>

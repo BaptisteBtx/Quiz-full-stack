@@ -21,7 +21,7 @@ const props = defineProps({
 
 const totalQuestionNumber = quizInfo.data.size
 let updateQuestion = props.updateQuestion
-console.log(updateQuestion)
+console.log(updateQuestion(0))
 loadQuiz()
 // Chargé la question en fonction de la position
 async function loadQuestionByPosition() {
@@ -50,10 +50,8 @@ async function loadQuiz() {
 <template>
   <div>
 
-
-    <p>QuestionsList</p>
     <div v-if="quizAvailable === true" v-for="q in questions" v-bind:key="q.id">
-      <div class="input-group mb-3">
+      <div class="d-flex justify-content-between align-items-center input-group mb-2">
         {{ q.title }} - {{ q.text }}
         <button type="button" class="btn btn-success" @click="updateQuestion(q.id)">Modifier</button>
       </div>
