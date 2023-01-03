@@ -3,7 +3,7 @@ import { ref, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router';
 import participationStorageService from '../services/ParticipationStorageService';
-import QuestionsList from '../components/QuestionsList.vue';
+import QuestionsList from './QuestionsList.vue';
 
 
 const router = useRouter()
@@ -21,7 +21,7 @@ async function returnHome() {
 }
 
 async function updateQuestion(number) {
-  router.push('/question_admin?p=' + number)
+  router.push('/admin?position=' + number)
 }
 
 // Export default : remplacé par script setup
@@ -29,13 +29,13 @@ async function updateQuestion(number) {
 </script>
 
 <template>
-  <div>
-    <h1>Liste de questions :</h1>
+  <div class="d-flex w-80 flex-column justify-content-center align-items-center">
+    <h5>Liste de questions :</h5>
     <Suspense>
       <QuestionsList :update-question="updateQuestion"></QuestionsList>
     </Suspense>
 
-    <button type="button" class="btn btn-success" @click="returnHome">Home</button>
+    <button type="button" class="btn btn-success w-25" @click="returnHome">Home</button>
   </div>
 </template>
   
