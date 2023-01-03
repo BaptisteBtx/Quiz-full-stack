@@ -3,7 +3,6 @@ import { ref, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router';
 import participationStorageService from '../services/ParticipationStorageService';
-import quizApiService from '../services/QuizApiService';
 import QuestionsList from '../components/QuestionsList.vue';
 
 
