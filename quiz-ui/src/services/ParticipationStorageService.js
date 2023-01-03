@@ -9,9 +9,12 @@ export default {
             return window.localStorage.getItem("playerName")
       },
       saveParticipationScore(participationScore) {
-            return window.sessionStorage.setItem("score", participationScore);
+            window.sessionStorage.setItem("score", participationScore);
       },
       getParticipationScore() {
             return window.sessionStorage.getItem("score");
+      },
+      disconnect() {
+            window.sessionStorage.setItem("token", null)
       }
 };

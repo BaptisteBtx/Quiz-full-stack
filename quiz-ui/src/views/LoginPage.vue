@@ -3,7 +3,7 @@ import { ref, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router';
 import participationStorageService from '../services/ParticipationStorageService';
-import quizApiService from '../services/QuizApiService'
+import quizApiService from '../services/QuizApiService';
 
 const router = useRouter()
 
@@ -13,7 +13,7 @@ const router = useRouter()
 const username = ref(participationStorageService.getPlayerName())
 const badPassword = ref("")
 const password = ref("")
-
+let token = ref(window.sessionStorage.getItem('token'))
 
 // Launch quiz 
 async function returnHome() {
@@ -21,17 +21,26 @@ async function returnHome() {
 }
 
 async function connect() {
-  let token = quizApiService.login(password)
-  console.log(token)
-  if (token === undefined) {
-    badPassword.value = "Mauvais mot de passe"
-  }
-  else {
+
+
+
+  let response = await quizApiService.login(password.value)
+
+  if (response.status === 200) {
     badPassword.value = ""
+    window.sessionStorage.setItem("token", response.data.token);
     router.push('/list_questions_admin')
   }
+  else {
 
+    badPassword.value = "Mauvais mot de passe"
+  }
+}
 
+function disconnect() {
+  badPassword.value = "Déconnexion réussi"
+  token.value = null
+  participationStorageService.disconnect()
 }
 
 // Export default : remplacé par script setup
@@ -49,6 +58,8 @@ async function connect() {
     <div class="input-group mb-3">
       <button type="button" class="btn btn-success" @click="returnHome">Accueil</button>
       <button type="button" class="btn btn-success" @click="connect">Connexion</button>
+      <button type="button" class="btn btn-success" @click="disconnect">Déconnexion</button>
+
     </div>
   </div>
 </template>

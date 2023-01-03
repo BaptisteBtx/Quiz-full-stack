@@ -25,7 +25,7 @@ export default {
         return { status: response.status, data: response.data };
       })
       .catch((error) => {
-        console.error(error);
+        return error;
       });
   },
   getQuizInfo() {
@@ -34,8 +34,9 @@ export default {
   getQuestion(position) {
     return this.call("get", "questions?position=" + position);
   },
+
   login(password) {
     //To Do : get Token for user
-    return 1
+    return this.call("post", "login", { password: password })
   }
 };
