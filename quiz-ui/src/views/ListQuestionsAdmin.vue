@@ -21,6 +21,10 @@ async function returnHome() {
   router.push('/')
 }
 
+async function updateQuestion(number) {
+  router.push('/question_admin?p=' + number)
+}
+
 // Export default : remplacé par script setup
 
 </script>
@@ -29,7 +33,7 @@ async function returnHome() {
   <div>
     <h1>Liste de questions :</h1>
     <Suspense>
-      <QuestionsList></QuestionsList>
+      <QuestionsList :update-question="updateQuestion"></QuestionsList>
     </Suspense>
 
     <button type="button" class="btn btn-success" @click="returnHome">Home</button>
