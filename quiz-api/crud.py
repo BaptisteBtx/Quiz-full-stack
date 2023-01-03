@@ -149,14 +149,14 @@ class CRUD():
                 cur.execute(
                     '''
                     SELECT * FROM questions ORDER BY position
-                    ''',
-                    (id,)
+                    '''
                 )
                 questions = []
                 for q in cur.fetchall():
                     d = dict(q)
                     d['possibleAnswers'] = json.loads(d['answers']) # Convert back from json
-                    questions.append(Question(**d))
+                    # questions.append(Question(**d))
+                    questions.append(d)
                 return questions
             except TypeError:
                 raise NotFound()

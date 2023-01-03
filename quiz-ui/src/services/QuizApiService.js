@@ -34,7 +34,12 @@ export default {
   getQuestion(position) {
     return this.call("get", "questions?position=" + position);
   },
-
+  getAllQuestions() {
+    return this.call("get", "questions/all").then(d => d.data);
+  },
+  saveParticipation(participation) {
+    return this.post("", participation);
+  },
   login(password) {
     //To Do : get Token for user
     return this.call("post", "login", { password: password })

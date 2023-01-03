@@ -1,105 +1,112 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect } from "vue";
 import participationStorageService from "@/services/ParticipationStorageService";
-import QuestionDisplay from './QuestionDisplay.vue'
+import QuestionDisplay from "./QuestionDisplay.vue";
 import quizApiService from "@/services/QuizApiService";
-import { useRouter } from 'vue-router';
-import QuizApiService from '../services/QuizApiService';
-import ParticipationStorageService from '../services/ParticipationStorageService';
-const router = useRouter()
+import { useRouter } from "vue-router";
+import QuizApiService from "../services/QuizApiService";
+import ParticipationStorageService from "../services/ParticipationStorageService";
+const router = useRouter();
 
-// const quiz = ref(null)
+const error = ref(null);
+const quizInfo = ref(null)
+const username = ref(ParticipationStorageService.getPlayerName())
+const questions = ref(null)
 
-// Variables formulaire
-const username = ref(participationStorageService.getPlayerName())
+const questionLoaded = ref(false)
 
-let currentQuestionPosition = ref(1)
-let question = await quizApiService.getQuestion(currentQuestionPosition.value)
-let quizInfo = await quizApiService.getQuizInfo()
-
-let currentQuestion = {
-  questionId: question.data.id,
-  questionTitle: question.data.title,
-  questionDescription: question.data.text,
-  possibleAnswers: question.data.possibleAnswers,
-  image: question.data.image
+try {
+  quizInfo.value = await quizApiService.getQuizInfo();
+  questions.value = await quizApiService.getAllQuestions(); // Charge question 1 au lancement
+} catch (error) {
+  console.log(error)
+  router.push("/"); // TODO : Page d'erreur
 }
 
 
+const totalQuestionNumber = quizInfo.value.data.size;
 
-const totalQuestionNumber = quizInfo.data.size
-let selectedAnswer = Array(totalQuestionNumber)
+const question = ref(questions.value[0])
 
-// Chargé la question en fonction de la position
-async function loadQuestionByPosition() {
+const selectedAnswers = ref([]);
+const selectedAnswer = ref(null)
 
-
-
-  if (currentQuestionPosition.value + 1 > totalQuestionNumber) { endQuiz() }
-  else {
-    //TO DO : Sauvegarder la réponse selectedAnswer
-
-    let question = await quizApiService.getQuestion(currentQuestionPosition.value + 1)
-
-    //TO DO : Indiquer à l'utilisateur qu'il doit entrer une réponse
-    if (selectedAnswer[currentQuestionPosition.value - 1] === undefined) {
-      //selectedAnswer[currentQuestionPosition.value - 1] = -1
-      console.log("Veuillez entrer une réponse !")
-      return
-    }
-    //TO DO : Gérer le cas de la question non disponible
-    if (question === undefined) {
-      selectedAnswer[currentQuestionPosition.value] = -1
-      currentQuestionPosition.value += 1
-      await loadQuestionByPosition()
-      return
-    }
-    console.log(currentQuestionPosition.value)
-
-
-    currentQuestion = {
-      questionId: question.data.id + 1,
-      questionTitle: question.data.title,
-      questionDescription: question.data.text,
-      possibleAnswers: question.data.possibleAnswers,
-      image: question.data.image
-    }
-
-    currentQuestionPosition.value += 1
-
+async function loadNextQuestion() {
+  if (question.value.position >= totalQuestionNumber) {
+    endQuiz();
+  } else {
+    selectedAnswers.value.push(selectedAnswer.value)
+    question.value = questions.value[question.value.position]
+    console.log(selectedAnswers.value)
+    // index de la question suivante = index courant + 1 = position courante
   }
-}
+  selectedAnswer.value = null
 
-function answerClickHandler(answerNumber) {
-
-  selectedAnswer[currentQuestionPosition.value - 1] = answerNumber
-  console.log('Réponse actuelle ', selectedAnswer)
-  //TO DO
 }
 
 async function endQuiz() {
-
-  //let score = await QuizApiService.getParticipationScore("Bob", [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-  //ParticipationStorageService.saveParticipationScore(35)
-
-  router.push('/');
+  try {
+    const participation = await QuizApiService.saveParticipation(username, selectedAnswers)
+    const score = participation.score
+    ParticipationStorageService.saveParticipationScore(username, selectedAnswers)
+  } catch (error) {
+    console.log(error)
+  }
+  
+  router.push("/");
 }
 
+function setSelectedAnswer(index) {
+  selectedAnswer.value = index+1
+}
 
-// Export default : remplacé par script setup
-
+// questionLoaded.value = true
 </script>
 
 <template>
-  <div class="question_manager">
-    <h1>Question : {{ currentQuestion.questionId }} / {{ totalQuestionNumber }}</h1>
-    <QuestionDisplay :key="currentQuestionPosition" :question="{ currentQuestion }"
-      @answer-selected="answerClickHandler"></QuestionDisplay>
-    <button type="button" class="btn btn-success" @click="loadQuestionByPosition">Suivant</button>
+  <div class="question_manager" v-if="question">
+    <h1>
+      Question : {{ question.position }} /
+      {{ totalQuestionNumber }}
+    </h1>
+    <QuestionDisplay 
+      :key="question"
+      :question="question"
+      @answer-selected="setSelectedAnswer"
+    ></QuestionDisplay>
+    <p v-if="selectedAnswer">Réponse choisie : n°{{ selectedAnswer }}</p>
+    <p v-else>Choisissez une réponse.</p>
+    <button
+      type="button"
+      class="btn btn-success"
+      @click="loadNextQuestion"
+      :disabled="!selectedAnswer"
+    >
+      Suivant
+    </button>
+  </div>
+
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" v-if="error">
+    <div
+      id="liveToast"
+      class="toast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="toast-header">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+        ></button>
+      <div class="toast-body">Hello, world! This is a toast message.</div>
+    </div>
+  </div>
+  
   </div>
 </template>
-  
-<style>
 
-</style>
-  
+<style></style>

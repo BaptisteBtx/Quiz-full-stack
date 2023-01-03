@@ -6,6 +6,14 @@ from ..utils import login_required
 questions_bp = Blueprint('questions_bp', __name__)
 
 
+@questions_bp.route('/all', methods=['GET'])
+def get_all():
+    """
+    Cette fonction permet de récupérer toutes les questions de la base de données.
+    """
+    db_question = CRUD.Question.get_all()
+    return db_question, 200
+    
 @questions_bp.route('/<int:questionId>', methods=['GET'])
 def get_by_id(questionId: int):
     """
@@ -24,6 +32,7 @@ def get_by_position():
     p = request.args.get('position')
     db_question = CRUD.Question.get_by_position(p)
     return db_question.dict(), 200
+
        
 
 @questions_bp.route('/', methods=['POST'])

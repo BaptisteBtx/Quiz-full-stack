@@ -1,7 +1,12 @@
+
+<!-- 
+  Cette page affiche le quiz : une question (Question Manager) par question
+ -->
+
 <script setup>
 import { ref, watchEffect } from 'vue'
 import participationStorageService from "@/services/ParticipationStorageService";
-import QuestionsManagerVue from '../components/QuestionsManager.vue';
+import QuestionsManager from '../components/QuestionsManager.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter()
 
@@ -20,7 +25,7 @@ const username = ref(participationStorageService.getPlayerName())
 <template>
   <div class="questions_page">
     <Suspense>
-      <QuestionsManagerVue></QuestionsManagerVue>
+      <QuestionsManager></QuestionsManager>
     </Suspense>
   </div>
 </template>
