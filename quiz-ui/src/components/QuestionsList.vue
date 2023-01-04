@@ -3,7 +3,6 @@ import { ref, watchEffect } from 'vue'
 import participationStorageService from "@/services/ParticipationStorageService";
 import quizApiService from "@/services/QuizApiService";
 import { useRouter } from 'vue-router';
-import QuestionDisplay from './QuestionDisplay.vue'
 
 const router = useRouter()
 
@@ -21,7 +20,7 @@ const props = defineProps({
 
 const totalQuestionNumber = quizInfo.data.size
 let updateQuestion = props.updateQuestion
-console.log(updateQuestion(0))
+
 loadQuiz()
 // Chargé la question en fonction de la position
 async function loadQuestionByPosition() {
@@ -30,6 +29,7 @@ async function loadQuestionByPosition() {
 
 }
 
+//Charge les question du quiz
 async function loadQuiz() {
 
   for (let i = 0; i < totalQuestionNumber; i += 1) {

@@ -8,6 +8,7 @@ import ListQuestionsAdmin from '../components/ListQuestionsAdmin.vue';
 
 const route = useRoute();
 const position = ref(0)
+console.log("AdminPage route :", route)
 
 //Récupération du token dans le sessionStorage
 
@@ -51,7 +52,7 @@ function disconnect() {
 </script>
 
 <template >
-  <div class="w-100 bd-highlight mb-3">
+  <div class="container">
     <h1>Admininistration</h1>
     <div v-if="verifyToken()">
       <p>{{ position }}</p>
