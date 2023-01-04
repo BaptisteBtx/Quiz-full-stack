@@ -24,10 +24,10 @@ def get_by_id(questionId: int):
     #     raise f"Question {questionId} not found in db"
     return db_question.dict(), 200
 
-@questions_bp.route('', methods=['GET'])
+@questions_bp.route('', methods=['GET'], strict_slashes=False)
 def get_by_position():
     """
-    Cette fonction permet de récupérer le contenu d’une question à partir de sa position de base de données.
+    Cette fonction permet de récupérer le contenu d'une question à partir de sa position de base de données.
     """
     p = request.args.get('position')
     db_question = CRUD.Question.get_by_position(p)
@@ -35,11 +35,11 @@ def get_by_position():
 
        
 
-@questions_bp.route('/', methods=['POST'])
+@questions_bp.route('', methods=['POST'], strict_slashes=False)
 @login_required
 def create():
     """
-    Cette fonction permet d’ajouter une question du quiz
+    Cette fonction permet d'ajouter une question du quiz
     Need Auth
     """
     payload = request.get_json()
