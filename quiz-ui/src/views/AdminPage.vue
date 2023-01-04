@@ -42,6 +42,9 @@ function verifyToken(tokens) {
 }
 
 function disconnect() {
+  window.sessionStorage.setItem("token", "")
+  token.value = undefined
+  authorization.value = false
   return
 }
 
