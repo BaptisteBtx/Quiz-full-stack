@@ -69,11 +69,15 @@ function setSelectedAnswer(index) {
       Question : {{ question.position }} /
       {{ totalQuestionNumber }}
     </h1>
-    <QuestionDisplay 
+    <div class="question">
+      <QuestionDisplay 
+      class="question"
       :key="question"
       :question="question"
       @answer-selected="setSelectedAnswer"
     ></QuestionDisplay>
+    </div>
+    <br>
     <p v-if="selectedAnswer">Réponse choisie : n°{{ selectedAnswer }}</p>
     <p v-else>Choisissez une réponse.</p>
     <button
@@ -109,4 +113,9 @@ function setSelectedAnswer(index) {
   </div>
 </template>
 
-<style></style>
+<style>
+.question {
+  display: flex;
+  justify-content: center;
+}
+</style>

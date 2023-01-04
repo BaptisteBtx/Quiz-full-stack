@@ -7,7 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <div id="app-container">
-    <header class="sticky-top bg-light">
+    <header class="bg-light">
       <div>
         <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
         <h2>Quiz app</h2>
