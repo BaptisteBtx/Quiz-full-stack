@@ -32,10 +32,10 @@ const selectedAnswers = ref([]);
 const selectedAnswer = ref(null)
 
 async function loadNextQuestion() {
+  selectedAnswers.value.push(selectedAnswer.value)
   if (question.value.position >= totalQuestionNumber) {
     endQuiz();
   } else {
-    selectedAnswers.value.push(selectedAnswer.value)
     question.value = questions.value[question.value.position]
     console.log(selectedAnswers.value)
     // index de la question suivante = index courant + 1 = position courante
@@ -46,7 +46,7 @@ async function loadNextQuestion() {
 
 async function endQuiz() {
   try {
-    const participation = await QuizApiService.saveParticipation(username, selectedAnswers)
+    const participation = await QuizApiService.saveParticipation(username.value, selectedAnswers.value)
     const score = participation.score
     ParticipationStorageService.saveParticipationScore(username, score)
   } catch (error) {
