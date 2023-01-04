@@ -6,8 +6,8 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div class="align-self-stretch w-90 d-flex flex-column justify-content ">
-    <header class="fixed-top w-100 justify-content-center">
+  <div class="align-self-stretch  w-90 d-flex flex-column justify-content ">
+    <header class="sticky-top bg-light w-100 justify-content-center bg-color-white">
       <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
       <div>
