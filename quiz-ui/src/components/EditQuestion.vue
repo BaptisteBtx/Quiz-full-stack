@@ -6,9 +6,9 @@ const props = defineProps({
   position: Number,
 });
 
-console.log(props.position)
 let question = await quizApiService.getQuestion(props.position)
 console.log(question.data)
+let index = 0
 
 const currentQuestion = {
   image: question.data.image,
@@ -19,6 +19,12 @@ const currentQuestion = {
   id: question.data.id
 }
 //const emits = defineEmits(["answer-selected"]);
+
+function answerSelected(number) {
+  if (number) {
+    index = number
+  }
+}
 
 </script>
 
