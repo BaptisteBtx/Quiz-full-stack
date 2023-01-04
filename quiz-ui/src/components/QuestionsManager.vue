@@ -48,7 +48,7 @@ async function endQuiz() {
   try {
     const participation = await QuizApiService.saveParticipation(username, selectedAnswers)
     const score = participation.score
-    ParticipationStorageService.saveParticipationScore(username, selectedAnswers)
+    ParticipationStorageService.saveParticipationScore(username, score)
   } catch (error) {
     console.log(error)
   }
