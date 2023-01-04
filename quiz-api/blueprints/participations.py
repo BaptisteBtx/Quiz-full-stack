@@ -18,7 +18,7 @@ participations_bp = Blueprint('participations_bp', __name__)
 #     return db_question.dict()
       
 
-@participations_bp.route('/', methods=['POST'])
+@participations_bp.route('', methods=['POST'], strict_slashes=False)
 def create():
     """
     Cette fonction permet d'envoyer la liste des réponses sélectionnées par un participant pour l'ensemble du quiz
