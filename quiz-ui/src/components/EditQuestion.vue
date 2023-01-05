@@ -5,21 +5,37 @@ import quizApiService from '../services/QuizApiService'
 //props
 const props = defineProps({
   position: Number,
+  addQ: Boolean
 });
+let question
+let currentQuestion
 
-let question = await quizApiService.getQuestion(props.position)
+if (props.position === -1) {
+  question = undefined
+  currentQuestion = {
+    image: undefined,
+    description: "Description",
+    title: "Titre",
+    possibleAnswers: ["0", "1", "2", "3"],
+    position: "-"
+  }
+}
+else {
+  question = await quizApiService.getQuestion(props.position)
+  currentQuestion = {
+    image: question.data.image,
+    description: question.data.text,
+    title: question.data.title,
+    possibleAnswers: question.data.possibleAnswers,
+    position: question.data.position,
+    id: question.data.id
+  }
+}
+
 let token = participationStorageService.getToken()
-console.log(token)
+let addQ = props.addQ
 let index = 0
 
-const currentQuestion = {
-  image: question.data.image,
-  description: question.data.text,
-  title: question.data.title,
-  possibleAnswers: question.data.possibleAnswers,
-  position: question.data.position,
-  id: question.data.id
-}
 //const emits = defineEmits(["answer-selected"]);
 
 function answerSelected(number) {
@@ -28,6 +44,8 @@ function answerSelected(number) {
     index = number
   }
 }
+
+
 
 </script>
 
@@ -64,9 +82,15 @@ function answerSelected(number) {
       </label>
     </div>
 
+    <div v-if="addQ">
+      <button class="btn btn-success" @click="$emit('question-add', currentQuestion, token)">Créer question</button>
+    </div>
+    <div v-else>
 
-    <button class="btn btn-success" @click="$emit('question-saved', currentQuestion, token)">Enregistrer les
-      modifications</button>
+      <button class="btn btn-success" @click="$emit('question-saved', currentQuestion, token)">Enregistrer les
+        modifications</button>
+    </div>
+
 
     <!-- <div
       @click="$emit('answer-selected', index)"
