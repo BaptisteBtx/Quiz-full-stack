@@ -12,15 +12,18 @@ const router = useRouter()
 const username = ref(participationStorageService.getPlayerName())
 
 let quizInfo = await quizApiService.getQuizInfo()
-let questions = Array(10)
-let quizAvailable = ref(false)
-const props = defineProps({
-  updateQuestion: Function
-})
 
+let questions = Array(console.log(quizInfo.data.size))
+let quizAvailable = ref(false)
+let token = participationStorageService.getToken()
+const props = defineProps({
+  updateQuestion: Function,
+  deleteQuestion: Function
+})
+console.log(questions)
 const totalQuestionNumber = quizInfo.data.size
 let updateQuestion = props.updateQuestion
-
+let deleteQuestion = props.deleteQuestion
 loadQuiz()
 // Chargé la question en fonction de la position
 async function loadQuestionByPosition() {
@@ -54,6 +57,7 @@ async function loadQuiz() {
       <div class="d-flex justify-content-between align-items-center input-group mb-2">
         {{ q.title }} - {{ q.text }}
         <button type="button" class="btn btn-success" @click="updateQuestion(q.id)">Modifier</button>
+        <button type="button" class="btn btn-success" @click="deleteQuestion(q, token)">Supprimer</button>
       </div>
     </div>
     <div v-else>

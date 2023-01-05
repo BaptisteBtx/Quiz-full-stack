@@ -3,6 +3,7 @@ import { ref, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router';
 import participationStorageService from '../services/ParticipationStorageService';
+import quizApiService from '../services/QuizApiService';
 import EditQuestion from './EditQuestion.vue';
 import QuestionsList from './QuestionsList.vue';
 
@@ -15,7 +16,8 @@ const router = useRouter()
 const username = ref(participationStorageService.getPlayerName())
 const question = ref(undefined)
 const questionUpdate = ref(false)
-
+let quizInfo = ref(await quizApiService.getQuizInfo())
+console.log(quizInfo)
 //let info = await quizApiService.getQuizInfo()
 //console.log(info)
 
@@ -47,6 +49,24 @@ function verifyQuestion() {
   return questionUpdate.value
 }
 
+function saveQuestion(newQuestion, token) {
+  updateQuestion(undefined)
+  console.log("question saved : ", newQuestion)
+  quizApiService.saveQuestion(newQuestion, token)
+}
+
+async function deleteQuestion(newQuestion, token) {
+
+
+  quizInfo.value = await quizApiService.getQuizInfo()
+  let lastQuestion = await quizApiService.getQuestion(quizInfo.value.data.size - 1)
+  await quizApiService.setQuestion(lastQuestion.data, token, newQuestion.id)
+
+  console.log("question deleted : ", newQuestion)
+  await quizApiService.deleteQuestion(newQuestion, token)
+  updateQuestion(undefined)
+}
+
 // Export default : remplacé par script setup
 
 </script>
@@ -56,13 +76,12 @@ function verifyQuestion() {
     <h5>Liste de questions :</h5>
     <Suspense>
       <div v-if="!verifyQuestion()">
-        <QuestionsList :update-question="updateQuestion"></QuestionsList>
+        <QuestionsList :delete-question="deleteQuestion" :update-question="updateQuestion"></QuestionsList>
       </div>
       <div v-else>
-        <EditQuestion :position="question">
+        <EditQuestion @question-saved="saveQuestion" :position="question">
 
         </EditQuestion>
-        <button class="btn btn-success" @click="updateQuestion(undefined)">Enregistrer les modifications</button>
       </div>
     </Suspense>
     <button type="button" class="btn btn-success w-25" @click="returnHome">Home</button>

@@ -35,13 +35,26 @@ export default {
 		return this.call("get", "questions?position=" + position);
 	},
 	getAllQuestions() {
-		return this.call("get", "questions/all").then((d) => d.data);
+		return this.call("get", "questions/all"); //.then((d) => d.data)
 	},
 	saveParticipation(username, participation) {
 		return this.call("post", "participations", { playerName: username, answers: participation });
 	},
 	login(password) {
-		//To Do : get Token for user
 		return this.call("post", "login", { password: password });
+	},
+	saveQuestion(question, token) {
+		//To Do : get Token for user
+		return this.call("post", "questions", question, token);
+	},
+	deleteQuestion(question, token) {
+		//To Do : get Token for user
+		let questionPosition = question.position
+
+		return this.call("delete", "questions/" + questionPosition, question, token);
+	},
+	setQuestion(question, token, newPosition) {
+		console.log("setquestion : ", token, question, newPosition)
+		return this.call("put", "questions/" + newPosition, question, token);
 	},
 };

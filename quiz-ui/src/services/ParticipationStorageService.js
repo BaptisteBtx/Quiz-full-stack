@@ -14,7 +14,11 @@ export default {
       getParticipationScore() {
             return window.sessionStorage.getItem("score");
       },
+      getToken() {
+            return window.sessionStorage.getItem("token");
+      },
       disconnect() {
             window.sessionStorage.setItem("token", null)
-      }
+      },
+
 };
