@@ -45,12 +45,11 @@ export default {
 	},
 	saveQuestion(question, token) {
 		//To Do : get Token for user
-		return this.call("post", "questions", question, token);
+		return this.call("put", "questions/" + question.id, question, token);
 	},
 	deleteQuestion(question, token) {
 		//To Do : get Token for user
-		let questionPosition = question.position
-
+		let questionPosition = question.id
 		return this.call("delete", "questions/" + questionPosition, question, token);
 	},
 	setQuestion(question, token, newPosition) {

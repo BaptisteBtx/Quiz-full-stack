@@ -51,7 +51,7 @@ function verifyQuestion() {
 
 function saveQuestion(newQuestion, token) {
   updateQuestion(undefined)
-  console.log("question saved : ", newQuestion)
+  console.log("question saved : ", newQuestion, token)
   quizApiService.saveQuestion(newQuestion, token)
 }
 
@@ -60,7 +60,7 @@ async function deleteQuestion(newQuestion, token) {
 
   quizInfo.value = await quizApiService.getQuizInfo()
   let lastQuestion = await quizApiService.getQuestion(quizInfo.value.data.size - 1)
-  await quizApiService.setQuestion(lastQuestion.data, token, newQuestion.id)
+  //await quizApiService.setQuestion(lastQuestion.data, token, newQuestion.position)
 
   console.log("question deleted : ", newQuestion)
   await quizApiService.deleteQuestion(newQuestion, token)

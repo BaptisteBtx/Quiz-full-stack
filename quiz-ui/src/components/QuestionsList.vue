@@ -13,14 +13,13 @@ const username = ref(participationStorageService.getPlayerName())
 
 let quizInfo = await quizApiService.getQuizInfo()
 
-let questions = Array(console.log(quizInfo.data.size))
+let questions = Array(quizInfo.data.size)
 let quizAvailable = ref(false)
 let token = participationStorageService.getToken()
 const props = defineProps({
   updateQuestion: Function,
   deleteQuestion: Function
 })
-console.log(questions)
 const totalQuestionNumber = quizInfo.data.size
 let updateQuestion = props.updateQuestion
 let deleteQuestion = props.deleteQuestion
@@ -56,7 +55,7 @@ async function loadQuiz() {
     <div v-if="quizAvailable === true" v-for="q in questions" v-bind:key="q.id">
       <div class="d-flex justify-content-between align-items-center input-group mb-2">
         {{ q.title }} - {{ q.text }}
-        <button type="button" class="btn btn-success" @click="updateQuestion(q.id)">Modifier</button>
+        <button type="button" class="btn btn-success" @click="updateQuestion(q.position)">Modifier</button>
         <button type="button" class="btn btn-success" @click="deleteQuestion(q, token)">Supprimer</button>
       </div>
     </div>

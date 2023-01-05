@@ -1,5 +1,6 @@
 <script setup>
 
+import participationStorageService from '../services/ParticipationStorageService';
 import quizApiService from '../services/QuizApiService'
 //props
 const props = defineProps({
@@ -7,7 +8,8 @@ const props = defineProps({
 });
 
 let question = await quizApiService.getQuestion(props.position)
-console.log(question.data)
+let token = participationStorageService.getToken()
+console.log(token)
 let index = 0
 
 const currentQuestion = {
@@ -63,7 +65,7 @@ function answerSelected(number) {
     </div>
 
 
-    <button class="btn btn-success" @click="$emit('question-saved', currentQuestion)">Enregistrer les
+    <button class="btn btn-success" @click="$emit('question-saved', currentQuestion, token)">Enregistrer les
       modifications</button>
 
     <!-- <div
