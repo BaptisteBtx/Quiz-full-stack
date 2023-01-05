@@ -45,7 +45,8 @@ export default {
 	},
 	saveQuestion(question, token) {
 		//To Do : get Token for user
-		return this.call("put", "questions/" + question.id, question, token);
+		console.log(question)
+		return this.call("put", "questions/" + question.position, question, token);
 	},
 	deleteQuestion(question, token) {
 		//To Do : get Token for user
