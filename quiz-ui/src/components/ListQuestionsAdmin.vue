@@ -72,6 +72,7 @@ async function deleteQuestion(newQuestion, token) {
 async function addQuestion(newQuestion, token) {
   console.log("addQestion : ", newQuestion)
   quizApiService.addQuestion(newQuestion, token)
+  updateQuestion(undefined)
 }
 
 function createQuestion() {
@@ -87,9 +88,11 @@ function createQuestion() {
   <div class="d-flex w-80 flex-column justify-content-center align-items-center">
     <h5>Liste de questions :</h5>
     <Suspense>
-      <div v-if="!verifyQuestion()">
+      <div class="justify-content-center align-items-center w-90 d-flex flex-column" v-if="!verifyQuestion()">
         <QuestionsList :delete-question="deleteQuestion" :update-question="updateQuestion"></QuestionsList>
-        <button type="button" class="btn btn-success w-25" @click="createQuestion">Créer Question</button>
+        <button type="button" class="btn btn-success m-1" style="min-width:150px; max-width:150px"
+          @click="createQuestion">Créer
+          Question</button>
       </div>
       <div v-else>
         <EditQuestion @question-saved="saveQuestion" @question-add="addQuestion" :addQ="addQ" :position="question">

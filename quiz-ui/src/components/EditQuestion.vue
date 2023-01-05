@@ -16,8 +16,20 @@ if (props.position === -1) {
     image: undefined,
     description: "Description",
     title: "Titre",
-    possibleAnswers: ["0", "1", "2", "3"],
-    position: "-"
+    possibleAnswers: [{
+      text: "0",
+      isCorrect: true,
+    }, {
+      text: "1",
+      isCorrect: false,
+    }, {
+      text: "2",
+      isCorrect: false,
+    }, {
+      text: "3",
+      isCorrect: false,
+    }],
+    position: 10
   }
 }
 else {
@@ -82,12 +94,12 @@ function answerSelected(number) {
       </label>
     </div>
 
-    <div v-if="addQ">
+    <div v-if="addQ" class="m-1">
       <button class="btn btn-success" @click="$emit('question-add', currentQuestion, token)">Créer question</button>
     </div>
     <div v-else>
 
-      <button class="btn btn-success" @click="$emit('question-saved', currentQuestion, token)">Enregistrer les
+      <button class="btn btn-success m-1" @click="$emit('question-saved', currentQuestion, token)">Enregistrer les
         modifications</button>
     </div>
 

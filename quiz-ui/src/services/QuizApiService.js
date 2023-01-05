@@ -58,7 +58,7 @@ export default {
 		return this.call("put", "questions/" + newPosition, question, token);
 	},
 	addQuestion(question, token) {
-		console.log("POST Question")
+		console.log("POST Question", question)
 		return this.call("post", "questions", question, token)
 	}
 };
