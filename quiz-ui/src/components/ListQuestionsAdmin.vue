@@ -17,6 +17,8 @@ const username = ref(participationStorageService.getPlayerName())
 const question = ref(undefined)
 const questionUpdate = ref(false)
 let quizInfo = ref(await quizApiService.getQuizInfo())
+
+let addQ = ref(false)
 console.log(quizInfo)
 //let info = await quizApiService.getQuizInfo()
 //console.log(info)
@@ -49,6 +51,8 @@ function verifyQuestion() {
   return questionUpdate.value
 }
 
+
+
 function saveQuestion(newQuestion, token) {
   updateQuestion(undefined)
   console.log("question saved : ", newQuestion, token)
@@ -59,12 +63,20 @@ async function deleteQuestion(newQuestion, token) {
 
 
   quizInfo.value = await quizApiService.getQuizInfo()
-  let lastQuestion = await quizApiService.getQuestion(quizInfo.value.data.size - 1)
-  //await quizApiService.setQuestion(lastQuestion.data, token, newQuestion.position)
 
   console.log("question deleted : ", newQuestion)
   await quizApiService.deleteQuestion(newQuestion, token)
   updateQuestion(undefined)
+}
+
+async function addQuestion(newQuestion, token) {
+  console.log("addQestion : ", newQuestion)
+  quizApiService.addQuestion(newQuestion, token)
+}
+
+function createQuestion() {
+  addQ.value = true
+  updateQuestion(-1)
 }
 
 // Export default : remplacé par script setup
@@ -77,14 +89,16 @@ async function deleteQuestion(newQuestion, token) {
     <Suspense>
       <div v-if="!verifyQuestion()">
         <QuestionsList :delete-question="deleteQuestion" :update-question="updateQuestion"></QuestionsList>
+        <button type="button" class="btn btn-success w-25" @click="createQuestion">Créer Question</button>
       </div>
       <div v-else>
-        <EditQuestion @question-saved="saveQuestion" :position="question">
+        <EditQuestion @question-saved="saveQuestion" @question-add="addQuestion" :addQ="addQ" :position="question">
 
         </EditQuestion>
       </div>
     </Suspense>
     <button type="button" class="btn btn-success w-25" @click="returnHome">Home</button>
+
   </div>
 </template>
   
