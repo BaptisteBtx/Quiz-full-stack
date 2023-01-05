@@ -54,12 +54,8 @@ function disconnect() {
 <template >
   <div class="container">
     <h1>Admininistration</h1>
-    <div v-if="verifyToken()">
-      <p>{{ position }}</p>
 
-    </div>
     <div v-if="verifyToken()">
-      <p>authorized</p>
       <Suspense>
         <ListQuestionsAdmin @position="updateQuestion"></ListQuestionsAdmin>
       </Suspense>
