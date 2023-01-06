@@ -3,10 +3,11 @@ Ce fichiers contient un ensemble de fonctions nécessaires
 au fonctionnement de l'api.
 """
 import functools
+import sqlite3
 from flask import abort, request, g
 from pydantic import ValidationError
+
 from .jwt_utils import decode_token, JwtError
-import sqlite3
 
 
 def login_required(view):
