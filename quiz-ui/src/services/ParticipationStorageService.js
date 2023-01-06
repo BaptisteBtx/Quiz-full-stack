@@ -1,6 +1,6 @@
 export default {
       clear() {
-            // todo : implement
+            window.sessionStorage.clear()
       },
       savePlayerName(playerName) {
             window.localStorage.setItem("playerName", playerName);

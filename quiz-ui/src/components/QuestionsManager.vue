@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watchEffect } from "vue";
-import participationStorageService from "@/services/ParticipationStorageService";
+import { ref } from "vue";
 import QuestionDisplay from "./QuestionDisplay.vue";
 import quizApiService from "@/services/QuizApiService";
 import { useRouter } from "vue-router";
 import QuizApiService from "../services/QuizApiService";
 import ParticipationStorageService from "../services/ParticipationStorageService";
+
 const router = useRouter();
 
 const error = ref(null);
@@ -13,24 +13,22 @@ const quizInfo = ref(null);
 const username = ref(ParticipationStorageService.getPlayerName());
 const questions = ref(null);
 
-const questionLoaded = ref(false);
-
 try {
   quizInfo.value = await quizApiService.getQuizInfo().then((d) => d.data);
-  questions.value = await quizApiService.getAllQuestions().then((d) => d.data); // Charge question 1 au lancement
-} catch (error) {
-  console.log(error);
+  questions.value = await quizApiService.getAllQuestions().then((d) => d.data); // Charge toutes les questions au lancement
+} catch (e) {
+  console.log(e);
+  error.value = e;
 }
 
 const totalQuestionNumber = quizInfo.value.size;
 
 const question = ref(questions.value[0]);
-console.log("question :: ",question.value)
 
 const selectedAnswers = ref([]);
 const selectedAnswer = ref(null);
 
-async function loadNextQuestion() {
+function loadNextQuestion() {
   selectedAnswers.value.push(selectedAnswer.value);
   if (question.value.position >= totalQuestionNumber) {
     endQuiz();
@@ -47,13 +45,12 @@ async function endQuiz() {
     const participation = await QuizApiService.saveParticipation(
       username.value,
       selectedAnswers.value
-    ).then(d=>d.data)
-    console.log("participatin : ",participation)
+    ).then((d) => d.data);
     const score = participation.score;
-    console.log("score : ",score)
     ParticipationStorageService.saveParticipationScore(score);
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    console.log(e);
+    error.value = e;
   }
 
   router.push("/score");
@@ -62,8 +59,6 @@ async function endQuiz() {
 function setSelectedAnswer(index) {
   selectedAnswer.value = index + 1;
 }
-
-// questionLoaded.value = true
 </script>
 
 <template>
