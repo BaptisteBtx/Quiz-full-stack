@@ -24,8 +24,7 @@ export default {
   name: "HomePage",
   data() {
     return {
-      // registeredScores: registeredScores
-      registeredScores: [{playerName:"test",score:10}, {playerName:"record",score:100}],
+      registeredScores: [],
       bestScore: 0,
       questionsCount: 0
     };
@@ -34,7 +33,7 @@ export default {
     console.log("Composant Home page 'created'");
     let quizInfo = await quizApiService.getQuizInfo()
     console.log(quizInfo)
-    // this.registeredScores = quizInfo.data.scores
+    this.registeredScores = quizInfo.data.scores
     this.registeredScores.forEach(e => {
       if (e.score > this.bestScore) this.bestScore = e.score
     });

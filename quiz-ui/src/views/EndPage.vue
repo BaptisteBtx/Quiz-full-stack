@@ -10,20 +10,20 @@ const router = useRouter()
 // Variables formulaire
 const username = ref(participationStorageService.getPlayerName())
 const score = ref(participationStorageService.getParticipationScore())
+console.log("score base : ",score.value)
 
 // Launch quiz 
 async function returnHome() {
   router.push('/')
 }
 
-// Export default : remplacé par script setup
-
 </script>
 
 <template>
   <div>
-    <h5>Thanks for playing {{ username.value }}, you're score has been updated !</h5>
-    <button type="button" class="btn btn-success" @click="returnHome">GO</button>
+    <h5>Score : {{ score }}</h5>
+    <h5>Merci d'avoir joué {{ username }}, ton score a bien été enregistré !</h5>
+    <button type="button" class="btn btn-success" @click="returnHome">Retourner à l'accueil</button>
   </div>
 </template>
   

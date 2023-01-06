@@ -9,9 +9,11 @@ export default {
             return window.localStorage.getItem("playerName")
       },
       saveParticipationScore(participationScore) {
+            console.log("score save : ",participationScore)
             window.sessionStorage.setItem("score", participationScore);
       },
       getParticipationScore() {
+            
             return window.sessionStorage.getItem("score");
       },
       getToken() {

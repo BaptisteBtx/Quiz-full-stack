@@ -51,7 +51,9 @@ function addAnswer() {
   editedQuestion.value.possibleAnswers.push({text:"",isCorrect:false})
 }
 
-// import { getCurrentInstance } from 'vue';
+function isGoodAnswer(index) {
+  return editedQuestion.value.possibleAnswers[index].isCorrect
+}
 
 
 
@@ -89,7 +91,7 @@ function addAnswer() {
     <!-- Radios -->
     <div class="input-group" v-for="(answer, index) in editedQuestion.possibleAnswers"> 
       <div class="input-group-text">
-        <input class="form-check-input mt-0" type="radio" name="radioAnswer" @click="selectGoodAnswer(index)">
+        <input class="form-check-input mt-0" type="radio" name="radioAnswer" @click="selectGoodAnswer(index)" :checked="isGoodAnswer(index)">
       </div>
       <input v-model="editedQuestion.possibleAnswers[index].text" type="text" class="form-control" :placeholder="'Réponse '+(index+1)">
     </div>

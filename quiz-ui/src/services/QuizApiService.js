@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const instance = axios.create({
-	// baseURL: 'http://127.0.0.1:5000',
 	baseURL: `${import.meta.env.VITE_API_URL}`,
 	json: true,
 });
@@ -35,7 +34,7 @@ export default {
 		return this.call("get", "questions?position=" + position);
 	},
 	getAllQuestions() {
-		return this.call("get", "questions/all"); //.then((d) => d.data)
+		return this.call("get", "questions/all");
 	},
 	saveParticipation(username, participation) {
 		return this.call("post", "participations", { playerName: username, answers: participation });
@@ -44,23 +43,17 @@ export default {
 		return this.call("post", "login", { password: password });
 	},
 	saveQuestion(question, token) {
-		//To Do : get Token for user
-		console.log("=============")
 		const id = question.id
 		delete question.id
 		return this.call("put", "questions/" + id, question, token);
 	},
 	deleteQuestion(question, token) {
-		//To Do : get Token for user
-		console.log("delete token : ", token)
 		return this.call("delete", "questions/" + question.id, question, token);
 	},
-	setQuestion(question, token, newPosition) {
-		console.log("setquestion : ", token, question, newPosition)
-		return this.call("put", "questions/" + newPosition, question, token);
-	},
+	// setQuestion(question, token, newPosition) {
+	// 	return this.call("put", "questions/" + newPosition, question, token);
+	// },
 	addQuestion(question, token) {
-		console.log("POST Question")
 		return this.call("post", "questions", question, token)
 	}
 };

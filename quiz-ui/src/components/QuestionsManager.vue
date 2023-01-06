@@ -16,16 +16,16 @@ const questions = ref(null);
 const questionLoaded = ref(false);
 
 try {
-  quizInfo.value = await quizApiService.getQuizInfo();
-  questions.value = await quizApiService.getAllQuestions(); // Charge question 1 au lancement
+  quizInfo.value = await quizApiService.getQuizInfo().then((d) => d.data);
+  questions.value = await quizApiService.getAllQuestions().then((d) => d.data); // Charge question 1 au lancement
 } catch (error) {
   console.log(error);
-  router.push("/"); // TODO : Page d'erreur
 }
 
-const totalQuestionNumber = quizInfo.value.data.size;
+const totalQuestionNumber = quizInfo.value.size;
 
 const question = ref(questions.value[0]);
+console.log("question :: ",question.value)
 
 const selectedAnswers = ref([]);
 const selectedAnswer = ref(null);
@@ -47,14 +47,16 @@ async function endQuiz() {
     const participation = await QuizApiService.saveParticipation(
       username.value,
       selectedAnswers.value
-    );
+    ).then(d=>d.data)
+    console.log("participatin : ",participation)
     const score = participation.score;
-    ParticipationStorageService.saveParticipationScore(username, score);
+    console.log("score : ",score)
+    ParticipationStorageService.saveParticipationScore(score);
   } catch (error) {
     console.log(error);
   }
 
-  router.push("/");
+  router.push("/score");
 }
 
 function setSelectedAnswer(index) {

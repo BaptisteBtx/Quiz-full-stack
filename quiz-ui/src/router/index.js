@@ -21,7 +21,7 @@ const router = createRouter({
       component: NewQuizPage
     },
     {
-      path: '/end_page',
+      path: '/score',
       name: 'EndPage',
       component: EndPage
     },
