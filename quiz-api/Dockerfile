@@ -27,5 +27,6 @@ COPY . ./quiz-api/
 LABEL maintainer="Michalski Léon <michalski.leon@edu.esiee.fr>" \
     version="1.0"
 
+EXPOSE 5000
 # Commande de démarrage du serveur gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "quiz-api:create_app()", "--log-level", "info", "--error-logfile", "-", "--access-logfile", "-"]
