@@ -1,19 +1,26 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 
 import participationStorageService from '../services/ParticipationStorageService';
 import quizApiService from '../services/QuizApiService'
 //props
 const props = defineProps({
-  question:Object,
-  isNew:Boolean
+  question:Object
 });
-console.log("question : ",props.question)
-console.log("new = ",props.isNew)
+
+const quizInfo = ref(await quizApiService.getQuizInfo().then(d=>d.data))
+
 
 const baseQuestion = ref(props.question)
-const editedQuestion = ref(Object())
+const editedQuestion = ref({
+  title:"",
+  text:"",
+  possibleAnswers:[],
+  position: quizInfo.value.size+1,
+  image:""
+})
 if (baseQuestion.value) editedQuestion.value = baseQuestion.value
+
 
 
 const token = ref(participationStorageService.getToken())
@@ -27,7 +34,7 @@ function selectGoodAnswer(index){
 }
 
 function handleImage(e) {
-  const selectedImage = e.target.files[0]; // get first file
+  const selectedImage = e.target.files[0]; 
   createBase64Image(selectedImage);
 }
 function createBase64Image(fileObject) {
@@ -35,12 +42,18 @@ function createBase64Image(fileObject) {
 
   reader.onload = (e) => {
     const image = e.target.result;
-    console.log(image)
     editedQuestion.value.image = image
-    // this.uploadImage();
   };
   reader.readAsDataURL(fileObject);
 }
+
+function addAnswer() {
+  editedQuestion.value.possibleAnswers.push({text:"",isCorrect:false})
+}
+
+// import { getCurrentInstance } from 'vue';
+
+
 
 
 
@@ -48,17 +61,20 @@ function createBase64Image(fileObject) {
 
 <template>
   <div>
+    <h5>Editeur de questions :</h5>
     <div class="input-group mb-3">
       <span class="input-group-text">Titre</span>
       <input v-model="editedQuestion.title" type="text" class="form-control">
     </div>
     <div class="container image-editing">
+      <p>Prévisualisation image : </p>
       <!-- Image preview -->
       <img class="img-responsive" style="width:30em" v-if="editedQuestion.image" :src="editedQuestion.image" />
+      <p v-else>Pas d'image</p>
       <!-- Image Upload -->
       <div class="container mt-10">
-        <div class="card bg-white">
-          <input @change="handleImage" class="custom-input" type="file" accept="image/*">
+        <div id="img-input" class="card bg-white w-100">
+          <input @change="handleImage" type="file" accept="image/*">
         </div>
       </div>
     </div>
@@ -77,12 +93,13 @@ function createBase64Image(fileObject) {
       </div>
       <input v-model="editedQuestion.possibleAnswers[index].text" type="text" class="form-control" :placeholder="'Réponse '+(index+1)">
     </div>
+    <button class="btn btn-primary" @click="addAnswer">Ajouter réponse</button>
 
   </div>
   <div class="d-flex justify-content-center" style="margin-top: 10px;">
     <div class="btn-group" role="group">
       <button class="btn btn-warning" @click="$emit('cancel-editing')">Annuler</button>
-      <button class="btn btn-success" @click="$emit('save-question', editedQuestion, token)">
+      <button class="btn btn-success" @click="$emit('save-question', editedQuestion, Boolean(baseQuestion), token)">
         <span v-if="baseQuestion">Enregistrer les modifications</span>
         <span v-else>Ajouter la question</span>
       </button>
@@ -93,5 +110,8 @@ function createBase64Image(fileObject) {
 </template>
 
 <style>
-
+#img-input {
+  margin:15px;
+  margin-top: 0;
+}
 </style>

@@ -46,12 +46,13 @@ export default {
 	saveQuestion(question, token) {
 		//To Do : get Token for user
 		console.log("=============")
-		console.log(question)
-		console.log(token)
-		return this.call("put", "questions/" + question.id, question, token);
+		const id = question.id
+		delete question.id
+		return this.call("put", "questions/" + id, question, token);
 	},
 	deleteQuestion(question, token) {
 		//To Do : get Token for user
+		console.log("delete token : ", token)
 		return this.call("delete", "questions/" + question.id, question, token);
 	},
 	setQuestion(question, token, newPosition) {

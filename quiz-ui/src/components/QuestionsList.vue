@@ -39,7 +39,7 @@ if (questions.value) {
 
 <template>
   <div>
-
+    <h5>Liste de questions :</h5>
     <div v-if="quizAvailable" v-for="q in questions" v-bind:key="q.id" class="question-wrapper">
       <div class="d-flex justify-content-between align-items-center input-group">
         <p><strong>{{ q.title }}</strong> <br>
