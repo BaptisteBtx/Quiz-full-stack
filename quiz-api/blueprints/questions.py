@@ -24,8 +24,6 @@ def get_by_id(questionId: int):
     Cette fonction permet de récupérer le contenu d'une question à partir de son identifiant.
     """
     db_question = CRUD.Question.get_by_id(questionId)
-    # if not db_question:
-    #     raise f"Question {questionId} not found in db"
     return db_question.dict(), 200
 
 
@@ -59,11 +57,6 @@ def update(questionId: int):
     """
     payload = request.get_json()
     q = Question(**payload, id=questionId)
-    # q.id = questionId
-    # try:
-    #     db_question = CRUD.Question.get_by_id(q.id)
-    #     if not db_question:
-    #         raise f"Question {q.id} not found in db"
     CRUD.Question.update(q)
     return '', 204
 
