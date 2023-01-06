@@ -1,5 +1,20 @@
 <script setup>
+import { ref, onErrorCaptured } from "vue";
 import { RouterLink, RouterView } from "vue-router";
+import AlertError from "./components/AlertError.vue";
+
+const error = ref(null);
+
+onErrorCaptured((err, vm, info) => {
+  console.log("Erreur : " + err.toString());
+  console.log("info: " + info);
+  error.value = err;
+  setTimeout(function () {
+    //7 sec avant d'enlever l'alerte
+    error.value = null
+  }, 7000);
+  return false;
+});
 </script>
 
 <template>
@@ -25,6 +40,7 @@ import { RouterLink, RouterView } from "vue-router";
         </nav>
       </div>
     </header>
+    <AlertError v-if="error" :error="error"></AlertError>
     <RouterView />
   </div>
 </template>

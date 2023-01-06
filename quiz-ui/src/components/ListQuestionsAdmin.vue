@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import ParticipationStorageService from "../services/ParticipationStorageService";
 import quizApiService from "../services/QuizApiService";
 import EditQuestion from "./EditQuestion.vue";
 import QuestionsList from "./QuestionsList.vue";
@@ -29,6 +30,8 @@ async function deleteQuestion(question, token) {
     forceListUpdate();
   } catch (error) {
     console.log(error);
+    ParticipationStorageService.disconnect()
+    throw(error)
   }
 }
 async function saveQuestion(editedQuestion, newQst, token) {
@@ -40,6 +43,8 @@ async function saveQuestion(editedQuestion, newQst, token) {
     cancelEditing();
   } catch (error) {
     console.log(error);
+    ParticipationStorageService.disconnect()
+    throw(error)
   }
 }
 // Pour recharger QuestionList

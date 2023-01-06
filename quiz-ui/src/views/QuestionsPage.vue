@@ -4,6 +4,7 @@
 
 <script setup>
 import QuestionsManager from "../components/QuestionsManager.vue";
+
 </script>
 
 <template>
