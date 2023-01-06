@@ -47,5 +47,5 @@ def decode_token(auth_token):
         return payload['sub']
     except jwt.ExpiredSignatureError:
         raise JwtError('Signature expired. Please log in again.')
-    except jwt.InvalidTokenError as e:
+    except jwt.InvalidTokenError:
         raise JwtError('Invalid token. Please log in again.')

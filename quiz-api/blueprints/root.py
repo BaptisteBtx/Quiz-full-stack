@@ -1,4 +1,7 @@
-from flask import Flask,request, Blueprint
+"""
+Les endpoints de l'api pour /
+"""
+from flask import Flask, request, Blueprint
 from flask_cors import CORS
 from ..jwt_utils import build_token
 from ..crud import CRUD
@@ -9,22 +12,17 @@ CORS(app)
 
 root_bp = Blueprint('root_bp', __name__)
 
-@root_bp.route('/')
-def hello_world():
-    x = 'world'
-    return f"Hello, {x}"
-
 
 @root_bp.route('/quiz-info', methods=['GET'])
 def get_quiz_info():
     """
-    Cette fonction permet de récupérer des informations d'ordre général sur le quiz
+    Cette fonction permet de récupérer le nombre de questions et les scores enregistrés.
     """
     size = CRUD.DBinfo.count_qst()
     scores = CRUD.DBinfo.get_scores()
     infos = QuizInfo(size=size, scores=scores)
 
-    return infos.dict(), 200 # Scores : tableau d'objet participationResult trié par scores décroissants (player name, score, date)
+    return infos.dict(), 200
 
 
 @root_bp.route('/login', methods=['POST'])
@@ -40,5 +38,9 @@ def login():
 
 @root_bp.route('/rebuild-db', methods=['POST'])
 def rebuild_db():
+    """
+    Permet de reconstruire la base de données.
+    """
     CRUD.Question.delete_all()
+    CRUD.Participation.delete_all()
     return 'Ok', 200

@@ -1,19 +1,20 @@
+"""
+Ensemble de fonctions pour interagir avec la base de données.
+"""
 import json
-from .models import Question, Participation, DbParticipation
-from .utils import get_db
 from werkzeug.exceptions import NotFound, InternalServerError
+
+from .models import Question, DbParticipation
+from .utils import get_db
 
 
 class CRUD():
-    class UnknownEntityException(Exception):
-        pass
-
     class DBinfo():
         @staticmethod
-        def count_qst():
+        def count_qst() -> int:
             db = get_db()
             cur = db.cursor()
-            try: 
+            try:
                 cur.execute(
                     '''
                     SELECT count(*) as cnt FROM questions
@@ -23,12 +24,12 @@ class CRUD():
                 return count
             finally:
                 cur.close()
-        
+
         @staticmethod
-        def get_scores():
+        def get_scores() -> list[DbParticipation]:
             db = get_db()
             cur = db.cursor()
-            try: 
+            try:
                 cur.execute(
                     '''
                     SELECT * FROM participations ORDER BY score DESC
@@ -38,8 +39,6 @@ class CRUD():
                 return scores
             finally:
                 cur.close()
-        
-            
 
     class Question():
         @staticmethod
@@ -47,7 +46,7 @@ class CRUD():
             db = get_db()
             cur = db.cursor()
             try:
-                cur.execute('''BEGIN''');
+                cur.execute('''BEGIN''')
                 cur.execute(
                     '''
                     UPDATE questions SET
@@ -57,29 +56,29 @@ class CRUD():
                 )
                 cur.execute(
                     '''
-                    INSERT INTO questions (title, position, text, image, answers) 
+                    INSERT INTO questions (title, position, text, image, answers)
                     VALUES (?, ?, ?, ?, ?)
                     ''',
                     (q.title, q.position, q.text, q.image, q.possibleAnswers.json())
                 )
                 db.commit()
                 return cur.lastrowid
-            except Exception as e:
+            except Exception:
                 cur.execute("rollback")
                 raise InternalServerError()
             finally:
                 cur.close()
-        
+
         @staticmethod
         def update(q: Question) -> None:
             db = get_db()
             cur = db.cursor()
             try:
-                ## Transaction
+                # Transaction
                 cur.execute('''BEGIN''')
                 # DELETE
                 cur.execute(
-                '''
+                    '''
                     UPDATE questions SET
                         position = position - 1
                     WHERE position >= (SELECT position FROM questions WHERE id=?)
@@ -102,25 +101,21 @@ class CRUD():
                 )
                 cur.execute(
                     '''
-                    INSERT INTO questions (id, title, position, text, image, answers) 
+                    INSERT INTO questions (id, title, position, text, image, answers)
                     VALUES (?, ?, ?, ?, ?, ?)
                     ''',
-                    (q.id, q.title, q.position, q.text, q.image, q.possibleAnswers.json())
+                    (q.id, q.title, q.position, q.text,
+                     q.image, q.possibleAnswers.json())
                 )
                 db.commit()
-                rows_affected = cur.rowcount
             except NotFound:
                 raise NotFound()
-            except Exception as e:
+            except Exception:
                 cur.execute("rollback")
                 raise InternalServerError()
             finally:
                 cur.close()
 
-            if rows_affected != 1:
-                raise NotFound()
-
-    
         @staticmethod
         def get_by_id(id: int) -> Question:
             db = get_db()
@@ -134,7 +129,8 @@ class CRUD():
                 )
                 row = cur.fetchone()
                 d = dict(row)
-                d['possibleAnswers'] = json.loads(d['answers']) # Convert back from json
+                d['possibleAnswers'] = json.loads(
+                    d['answers'])  # Convert back from json
                 return Question(**d)
             except TypeError:
                 raise NotFound()
@@ -154,7 +150,8 @@ class CRUD():
                 questions = []
                 for q in cur.fetchall():
                     d = dict(q)
-                    d['possibleAnswers'] = json.loads(d['answers']) # Convert back from json
+                    d['possibleAnswers'] = json.loads(
+                        d['answers'])  # Convert back from json
                     # questions.append(Question(**d))
                     questions.append(d)
                 return questions
@@ -176,7 +173,8 @@ class CRUD():
                 )
                 row = cur.fetchone()
                 d = dict(row)
-                d['possibleAnswers'] = json.loads(d['answers']) # Convert back from json
+                d['possibleAnswers'] = json.loads(
+                    d['answers'])  # Convert back from json
                 return Question(**d)
             except TypeError:
                 raise NotFound()
@@ -189,14 +187,14 @@ class CRUD():
             cur = db.cursor()
             rows_affected = 0
             try:
-                cur.execute('''BEGIN''');
+                cur.execute('''BEGIN''')
                 cur.execute(
-                '''
+                    '''
                     UPDATE questions SET
                         position = position - 1
                     WHERE position >= (SELECT position FROM questions WHERE id=?)
                 ''', (id,)
-                );
+                )
                 cur.execute(
                     '''
                     DELETE FROM questions WHERE id=?
@@ -209,7 +207,7 @@ class CRUD():
                 raise InternalServerError()
             finally:
                 cur.close()
-            
+
             if rows_affected != 1:
                 raise NotFound()
 
@@ -226,7 +224,7 @@ class CRUD():
                 db.commit()
             finally:
                 cur.close()
-        
+
         @staticmethod
         def get_correct_answers_positions():
             db = get_db()
@@ -234,7 +232,7 @@ class CRUD():
             try:
                 cur.execute(
                     '''
-                    SELECT 
+                    SELECT
                         CAST(substr(fullkey , 3, LENGTH(fullkey) - 3) as INT) + 1 as correctPosition
                     FROM questions, json_each(questions.answers)
                         WHERE json_extract(value, '$.isCorrect') = 1
@@ -255,14 +253,14 @@ class CRUD():
                 cur.execute(
                     '''
                     INSERT INTO participations(playerName, date, score) VALUES (?, ?, ?)
-                    ''', 
+                    ''',
                     (p.playerName, p.date, p.score)
                 )
                 db.commit()
                 return cur.lastrowid
             finally:
                 cur.close()
-    
+
         @staticmethod
         def delete_all() -> None:
             db = get_db()
@@ -276,4 +274,3 @@ class CRUD():
                 db.commit()
             finally:
                 cur.close()
-
