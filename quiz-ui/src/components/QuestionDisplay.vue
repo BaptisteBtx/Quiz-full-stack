@@ -9,12 +9,16 @@ const currentQuestion = props.question;
 </script>
 
 <template>
-  <div class="card">
-    <img
-      v-if="currentQuestion.image"
-      :src="currentQuestion.image"
-      class="card-img-top"
-    />
+  <div class="card d-flex align-items-center">
+    <div class="img-wrapper">
+      <img
+        v-if="currentQuestion.image"
+        :src="currentQuestion.image"
+        class="card-img-top img-responsive"
+        style="object-fit: contain"
+      />
+    </div>
+    
     <div class="card-body">
       <h5 class="card-title">{{ currentQuestion.title }}</h5>
       <p class="card-text">{{ currentQuestion.text }}</p>
@@ -46,6 +50,6 @@ label {
 .card {
   width: 66%;
   max-width: 700px;
-  max-height: 700px;
+  /* max-height: 700px; */
 }
 </style>
