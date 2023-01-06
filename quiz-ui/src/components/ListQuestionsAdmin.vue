@@ -89,7 +89,10 @@ function createQuestion() {
     <Suspense>
       <div v-if="!verifyQuestion()">
         <QuestionsList :delete-question="deleteQuestion" :update-question="updateQuestion"></QuestionsList>
-        <button type="button" class="btn btn-success w-25" @click="createQuestion">Créer Question</button>
+        <div class="d-flex justify-content-center">
+          <button type="button" class="btn btn-success w-25" @click="createQuestion">Créer Question</button>
+        </div>
+        
       </div>
       <div v-else>
         <EditQuestion @question-saved="saveQuestion" @question-add="addQuestion" :addQ="addQ" :position="question">
@@ -97,7 +100,7 @@ function createQuestion() {
         </EditQuestion>
       </div>
     </Suspense>
-    <button type="button" class="btn btn-success w-25" @click="returnHome">Home</button>
+    <!-- <button type="button" class="btn btn-success w-25" @click="returnHome">Home</button> -->
 
   </div>
 </template>

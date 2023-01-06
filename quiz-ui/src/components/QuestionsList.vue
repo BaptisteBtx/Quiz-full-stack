@@ -10,62 +10,56 @@ const router = useRouter()
 
 // Variables formulaire
 const username = ref(participationStorageService.getPlayerName())
+const questions = ref(null)
 
-let quizInfo = await quizApiService.getQuizInfo()
+try {
+  // quizInfo = await quizApiService.getQuizInfo().then(d=>d.data)
+  questions.value = await quizApiService.getAllQuestions().then(d=>d.data)
+} catch (error) {
+  console.log(error)
+}
 
-let questions = Array(quizInfo.data.size)
-let quizAvailable = ref(false)
-let token = participationStorageService.getToken()
+
+const quizAvailable = ref(false)
+const token = participationStorageService.getToken()
 const props = defineProps({
   updateQuestion: Function,
   deleteQuestion: Function
 })
-const totalQuestionNumber = quizInfo.data.size
-let updateQuestion = props.updateQuestion
-let deleteQuestion = props.deleteQuestion
-loadQuiz()
-// Chargé la question en fonction de la position
-async function loadQuestionByPosition() {
+// const totalQuestionNumber = quizInfo.data.size
+const updateQuestion = props.updateQuestion
+const deleteQuestion = props.deleteQuestion
+// loadQuiz()
 
-
-
-}
-
-//Charge les question du quiz
-async function loadQuiz() {
-
-  for (let i = 0; i < totalQuestionNumber; i += 1) {
-    let question = await quizApiService.getQuestion(i + 1)
-    questions[i] = question.data
-  }
+if (questions.value) {
   quizAvailable.value = true
 }
-
-
-
-
-
-// Export default : remplacé par script setup
 
 </script>
 
 <template>
   <div>
 
-    <div v-if="quizAvailable === true" v-for="q in questions" v-bind:key="q.id">
-      <div class="d-flex justify-content-between align-items-center input-group mb-2">
-        {{ q.title }} - {{ q.text }}
-        <button type="button" class="btn btn-success" @click="updateQuestion(q.position)">Modifier</button>
-        <button type="button" class="btn btn-success" @click="deleteQuestion(q, token)">Supprimer</button>
+    <div v-if="quizAvailable" v-for="q in questions" v-bind:key="q.id" class="question-wrapper">
+      <div class="d-flex justify-content-between align-items-center input-group">
+        <p><strong>{{ q.title }}</strong> <br>
+        {{ q.text }}</p>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-success" @click="updateQuestion(q.position)">Modifier</button>
+          <button type="button" class="btn btn-danger" @click="deleteQuestion(q, token)">Supprimer</button>
+        </div>
       </div>
     </div>
     <div v-else>
-      <p>Loading</p>
+      <p>Loading...</p>
     </div>
   </div>
 </template>
   
 <style>
-
+.question-wrapper {
+  border: solid 1px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
 </style>
   

@@ -12,13 +12,12 @@ console.log("AdminPage route :", route)
 
 //Récupération du token dans le sessionStorage
 
-let token = ref(window.sessionStorage.getItem("token"))
-const authorization = ref(false)
+const token = ref(window.sessionStorage.getItem("token"))
+// const authorization = ref(false)
 
 //Affichage de la modification de question
 
 function updateQuestion(positions) {
-  console.log('updatequestion')
   if (positions !== 0) {
     position.value = positions
   }
@@ -29,43 +28,44 @@ function updateQuestion(positions) {
 
 //On vérifie la présence d'un token d'authentification
 
-function verifyToken(tokens) {
+// function verifyToken(tokens) {
+//   console.log("token : ",token.value)
 
-  if (token.value !== undefined && token.value !== null && token.value !== "") {
-    authorization.value = true
-  } else if (tokens !== undefined && tokens !== null && tokens !== "") {
-    token.value = tokens
-    authorization.value = true
-  } else {
-    authorization.value = false
-  }
-  return authorization.value
+//   if (token?.value) {
+//     authorization.value = true
+//   } else if (tokens?.value) {
+//     console.log("tokens",token)
+//     token.value = tokens
+//     authorization.value = true
+//   } else {
+//     authorization.value = false
+//   }
+//   return authorization.value
+// }
+function setToken(newToken) {
+  token.value = newToken
 }
 
-function disconnect() {
-  window.sessionStorage.setItem("token", "")
-  token.value = undefined
-  authorization.value = false
-  return
-}
 
 </script>
 
 <template >
   <div class="container">
     <h1>Admininistration</h1>
+    <LoginComponent @token="setToken"></LoginComponent>
+    
 
-    <div v-if="verifyToken()">
+    <div v-if="token">
       <Suspense>
         <ListQuestionsAdmin @position="updateQuestion"></ListQuestionsAdmin>
       </Suspense>
     </div>
-    <div v-else>
+    <p v-else>Entrez le mot de passe pour acceder au panneau d'administration</p>
+    <!-- <div v-else>
       <Suspense>
-        <LoginComponent @token="verifyToken"></LoginComponent>
+        
       </Suspense>
-    </div>
-    <button type="button" class="btn btn-danger" @click="disconnect()">Déconnexion</button>
+    </div> -->
   </div>
 </template>
 
@@ -76,5 +76,8 @@ function disconnect() {
     display: flex;
     align-items: center;
   }
+}
+#deconnexion {
+  margin: 20px;
 }
 </style>

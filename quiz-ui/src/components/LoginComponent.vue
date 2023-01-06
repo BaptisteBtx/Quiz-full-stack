@@ -6,17 +6,11 @@ import quizApiService from '../services/QuizApiService';
 
 const router = useRouter()
 
-// const quiz = ref(null)
-
 // Variables formulaire
 const emits = defineEmits(["token"])
-const badPassword = ref("")
+const badPassword = ref(false)
 const password = ref("")
-
-// Return Home
-async function returnHome() {
-  router.push('/')
-}
+const token = ref(window.sessionStorage.getItem("token"))
 
 async function connect() {
 
@@ -25,32 +19,40 @@ async function connect() {
   let response = await quizApiService.login(password.value)
 
   if (response.status === 200) {
-    badPassword.value = ""
+    badPassword.value = false
     window.sessionStorage.setItem("token", response.data.token);
+    token.value = response.data.token
     emits("token", response.data.token)
     //router.push('/list_questions_admin')
   }
   else {
-    badPassword.value = "Mauvais mot de passe"
+    badPassword.value = true
   }
 }
-
-// Export default : remplacé par script setup
+function disconnect() {
+  window.sessionStorage.setItem("token", null)
+  token.value = null
+  emits("token", null)
+}
 
 </script>
 
 <template>
-  <div>
+  <button v-if="token" id="deconnexion" type="button" class="btn btn-danger" @click="disconnect">Déconnexion</button>
+  <div v-else>
     <div class="input-group mb-3">
       <span class="input-group-text" id="form-username">Mot de passe</span>
       <input type="text" aria-label="Password" aria-describedby="form-username" v-model="password">
     </div>
-    <p>{{ badPassword }}</p>
-    <div class="d-flex justify-content-around">
-      <button type="button" class="btn btn-success" @click="returnHome">Retour</button>
-      <button type="button" class="btn btn-success" @click="connect">Connexion</button>
-
+    <div
+      v-if="badPassword"
+      class="alert alert-danger d-flex align-items-center"
+      role="alert"
+    >
+      <div>Mauvais mot de passe.</div>
     </div>
+    <button type="button" class="btn btn-success" @click="connect">Connexion</button>
+
   </div>
 </template>
   
