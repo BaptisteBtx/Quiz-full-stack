@@ -3,12 +3,21 @@ import { ref } from "vue";
 
 import participationStorageService from "../services/ParticipationStorageService";
 import quizApiService from "../services/QuizApiService";
+
+const error = ref(null)
 //props
 const props = defineProps({
   question: Object,
 });
 
-const quizInfo = ref(await quizApiService.getQuizInfo().then((d) => d.data));
+const quizInfo = ref(null)
+try {
+  quizInfo.value = await quizApiService.getQuizInfo().then((d) => d.data)
+} catch (e) {
+  console.log(e)
+  error.value = e
+}
+
 
 const baseQuestion = ref(props.question);
 const editedQuestion = ref({
