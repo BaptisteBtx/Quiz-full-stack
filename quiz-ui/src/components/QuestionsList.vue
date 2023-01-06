@@ -45,7 +45,7 @@ if (questions.value) {
         <p><strong>{{ q.title }}</strong> <br>
         {{ q.text }}</p>
         <div class="btn-group" role="group">
-          <button type="button" class="btn btn-success" @click="updateQuestion(q.position)">Modifier</button>
+          <button type="button" class="btn btn-success" @click="updateQuestion(q)">Modifier</button>
           <button type="button" class="btn btn-danger" @click="deleteQuestion(q, token)">Supprimer</button>
         </div>
       </div>

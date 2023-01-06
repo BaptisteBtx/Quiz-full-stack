@@ -1,48 +1,45 @@
 <script setup>
+import { ref } from 'vue'
 
 import participationStorageService from '../services/ParticipationStorageService';
 import quizApiService from '../services/QuizApiService'
 //props
 const props = defineProps({
-  position: Number,
-  addQ: Boolean
+  question:Object,
+  isNew:Boolean
 });
-let question
-let currentQuestion
+console.log("question : ",props.question)
+console.log("new = ",props.isNew)
 
-if (props.position === -1) {
-  question = undefined
-  currentQuestion = {
-    image: undefined,
-    description: "Description",
-    title: "Titre",
-    possibleAnswers: ["0", "1", "2", "3"],
-    position: "-"
+const baseQuestion = ref(props.question)
+const editedQuestion = ref(Object())
+if (baseQuestion.value) editedQuestion.value = baseQuestion.value
+
+
+const token = ref(participationStorageService.getToken())
+
+
+function selectGoodAnswer(index){
+  for (let i = 0; i < editedQuestion.value.possibleAnswers.length; i++) {
+    editedQuestion.value.possibleAnswers[i].isCorrect = i==index
   }
-}
-else {
-  question = await quizApiService.getQuestion(props.position)
-  currentQuestion = {
-    image: question.data.image,
-    description: question.data.text,
-    title: question.data.title,
-    possibleAnswers: question.data.possibleAnswers,
-    position: question.data.position,
-    id: question.data.id
-  }
+  console.log(editedQuestion.value.possibleAnswers)
 }
 
-let token = participationStorageService.getToken()
-let addQ = props.addQ
-let index = 0
+function handleImage(e) {
+  const selectedImage = e.target.files[0]; // get first file
+  createBase64Image(selectedImage);
+}
+function createBase64Image(fileObject) {
+  const reader = new FileReader();
 
-//const emits = defineEmits(["answer-selected"]);
-
-function answerSelected(number) {
-  console.log(number)
-  if (number) {
-    index = number
-  }
+  reader.onload = (e) => {
+    const image = e.target.result;
+    console.log(image)
+    editedQuestion.value.image = image
+    // this.uploadImage();
+  };
+  reader.readAsDataURL(fileObject);
 }
 
 
@@ -50,56 +47,49 @@ function answerSelected(number) {
 </script>
 
 <template>
-  <div class="container d-flex justify-content-center align-items-center flex-column ">
-    <h5>Editing question {{ props.position }}</h5>
-
+  <div>
+    <div class="input-group mb-3">
+      <span class="input-group-text">Titre</span>
+      <input v-model="editedQuestion.title" type="text" class="form-control">
+    </div>
     <div class="container image-editing">
-      <img class="img-responsive" style="width:30em" v-if="currentQuestion.image" :src="currentQuestion.image" />
-    </div>
-
-    <div class="title-editing d-flex justify-content-left aling-items-center p-2 w-100">
-      <input class="w-100" type="text" aria-label="Title" aria-describedby="form-title"
-        v-model="currentQuestion.title" />
-    </div>
-
-    <div class="desc-editing d-flex justify-content-left aling-items-center p-2 w-100">
-      <input class="w-100" type="text" aria-label="Description" aria-describedby="form-title"
-        v-model="currentQuestion.description" />
-    </div>
-
-    <div class="desc-editing d-flex justify-content-left aling-items-center p-2 w-100">
-      <input class="w-100" type="text" aria-label="Position" aria-describedby="form-title"
-        v-model="currentQuestion.position" />
-    </div>
-
-    <div class="form-check d-flex justify-content-center align-items-center" name="radioAnswer"
-      v-for="(answer, index) in currentQuestion.possibleAnswers">
-      <input class="form-check-input" name="radioAnswer" type="radio" :id="index" @click="answerSelected(index)" />
-      <label class="form-check-label w-100" :for="index">
-        <div class="title-editing d-flex justify-content-left aling-items-center p-2 w-100">
-          <input class="w-100" type="text" aria-label="answer" v-model="answer.text" />
+      <!-- Image preview -->
+      <img class="img-responsive" style="width:30em" v-if="editedQuestion.image" :src="editedQuestion.image" />
+      <!-- Image Upload -->
+      <div class="container mt-10">
+        <div class="card bg-white">
+          <input @change="handleImage" class="custom-input" type="file" accept="image/*">
         </div>
-      </label>
+      </div>
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text">Question</span>
+      <input v-model="editedQuestion.text" type="text" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+      <span class="input-group-text">Position</span>
+      <input v-model="editedQuestion.position" type="number" class="form-control" placeholder="Position dans le quiz">
+    </div>
+    <!-- Radios -->
+    <div class="input-group" v-for="(answer, index) in editedQuestion.possibleAnswers"> 
+      <div class="input-group-text">
+        <input class="form-check-input mt-0" type="radio" name="radioAnswer" @click="selectGoodAnswer(index)">
+      </div>
+      <input v-model="editedQuestion.possibleAnswers[index].text" type="text" class="form-control" :placeholder="'Réponse '+(index+1)">
     </div>
 
-    <div v-if="addQ">
-      <button class="btn btn-success" @click="$emit('question-add', currentQuestion, token)">Créer question</button>
-    </div>
-    <div v-else>
-
-      <button class="btn btn-success" @click="$emit('question-saved', currentQuestion, token)">Enregistrer les
-        modifications</button>
-    </div>
-
-
-    <!-- <div
-      @click="$emit('answer-selected', index)"
-      v-for="(answer, index) in currentQuestion.possibleAnswers"
-      v-bind:key="answer.text"
-    >
-a>
-  >-->
   </div>
+  <div class="d-flex justify-content-center" style="margin-top: 10px;">
+    <div class="btn-group" role="group">
+      <button class="btn btn-warning" @click="$emit('cancel-editing')">Annuler</button>
+      <button class="btn btn-success" @click="$emit('save-question', editedQuestion, token)">
+        <span v-if="baseQuestion">Enregistrer les modifications</span>
+        <span v-else>Ajouter la question</span>
+      </button>
+    </div>
+    
+  </div>
+
 </template>
 
 <style>

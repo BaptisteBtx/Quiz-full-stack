@@ -10,76 +10,46 @@ import QuestionsList from './QuestionsList.vue';
 
 const router = useRouter()
 
-// const quiz = ref(null)
+const editingQuestion = ref(false)
+const question = ref(null)
+// const quizInfo = ref(await quizApiService.getQuizInfo().then(d=>d.data))
 
-// Variables formulaire
-const username = ref(participationStorageService.getPlayerName())
-const question = ref(undefined)
-const questionUpdate = ref(false)
-let quizInfo = ref(await quizApiService.getQuizInfo())
 
-let addQ = ref(false)
-console.log(quizInfo)
-//let info = await quizApiService.getQuizInfo()
-//console.log(info)
-
-// Launch quiz 
-async function returnHome() {
-  router.push('/')
+function updateQuestion(qst){
+  question.value = qst
+  editingQuestion.value = true
+  console.log("Update : ",question)
 }
-
-async function updateQuestion(number) {
-
-  if (number) {
-    console.log("number: ", number)
-    question.value = number
-  }
-  else {
-    console.log("no number")
-    question.value = undefined
-  }
-  verifyQuestion()
-}
-
-function verifyQuestion() {
-  console.log("verifyQuestion")
-  if (question.value) {
-    questionUpdate.value = true
-  } else {
-    questionUpdate.value = false
-  }
-  return questionUpdate.value
-}
-
-
-
-function saveQuestion(newQuestion, token) {
-  updateQuestion(undefined)
-  console.log("question saved : ", newQuestion, token)
-  quizApiService.saveQuestion(newQuestion, token)
-}
-
-async function deleteQuestion(newQuestion, token) {
-
-
-  quizInfo.value = await quizApiService.getQuizInfo()
-
-  console.log("question deleted : ", newQuestion)
-  await quizApiService.deleteQuestion(newQuestion, token)
-  updateQuestion(undefined)
-}
-
-async function addQuestion(newQuestion, token) {
-  console.log("addQestion : ", newQuestion)
-  quizApiService.addQuestion(newQuestion, token)
-}
-
 function createQuestion() {
-  addQ.value = true
-  updateQuestion(-1)
+  console.log("Create new question")
+  editingQuestion.value = true
+}
+function cancelEditing() {
+  editingQuestion.value = false
+  question.value = null
 }
 
-// Export default : remplacé par script setup
+
+async function deleteQuestion(question, token){
+  console.log("Delete : ", question)
+  try {
+    await quizApiService.deleteQuestion(question, token)
+  } catch (error) {
+    console.log(error)
+  }
+}
+async function saveQuestion(editedQuestion, token){
+  console.log("Save : ", editedQuestion)
+    // API
+  try {
+    if (question.value) await quizApiService.saveQuestion(editedQuestion, token)
+    else await quizApiService.addQuestion(editedQuestion, token)
+    cancelEditing()
+  } catch (error) {
+    console.log(error)
+  }
+  
+}
 
 </script>
 
@@ -87,20 +57,16 @@ function createQuestion() {
   <div class="d-flex w-80 flex-column justify-content-center align-items-center">
     <h5>Liste de questions :</h5>
     <Suspense>
-      <div v-if="!verifyQuestion()">
-        <QuestionsList :delete-question="deleteQuestion" :update-question="updateQuestion"></QuestionsList>
-        <div class="d-flex justify-content-center">
-          <button type="button" class="btn btn-success w-25" @click="createQuestion">Créer Question</button>
-        </div>
-        
+      <div v-if="editingQuestion">
+        <EditQuestion @save-question="saveQuestion" @cancel-editing="cancelEditing" :question="question"></EditQuestion>
       </div>
       <div v-else>
-        <EditQuestion @question-saved="saveQuestion" @question-add="addQuestion" :addQ="addQ" :position="question">
-
-        </EditQuestion>
+        <QuestionsList :delete-question="deleteQuestion" :update-question="updateQuestion"></QuestionsList>
+        <div class="d-flex justify-content-center">
+          <button type="button" class="btn btn-success w-25" @click="createQuestion">Créer une question</button>
+        </div>
       </div>
     </Suspense>
-    <!-- <button type="button" class="btn btn-success w-25" @click="returnHome">Home</button> -->
 
   </div>
 </template>
